@@ -1,0 +1,262 @@
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');
+@import "tailwindcss";
+
+/* Import Funnel Display font - moved to top */
+
+/* Custom theme configuration for Tailwind v4 */
+@theme {
+  /* Override Zinc Colors to match user palette */
+  --color-zinc-950: #242424; /* Main background */
+  --color-zinc-900: #5c5c5c; /* Sections like chat box */
+  --color-zinc-850: #5c5c5c; /* Fallback */
+  --color-zinc-800: #5c5c5c; /* Borders */
+  --color-zinc-700: #5c5c5c; /* Secondary text/borders */
+  --color-zinc-600: #5c5c5c; /* Hover states */
+  --color-zinc-500: #888888; /* Muted text - intermediary? Or keep default? User didn't specify. I'll make it lighter than 575757. */
+  
+  --color-zinc-400: #a1a1aa; /* Keep defaults for mid-tones if not specified */
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-100: #f2f2f2; /* Main text */
+  --color-zinc-50: #fafafa;
+  
+  /* Use Funnel Display as the default font */
+  --font-sans: 'Funnel Display', sans-serif;
+  --font-display: 'Funnel Display', sans-serif;
+
+  /* Animation utilities */
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Base styles */
+@layer base {
+  * {
+    @apply border-zinc-800;
+  }
+  
+  body {
+    @apply bg-zinc-950 text-zinc-100 antialiased;
+    font-family: 'Funnel Display', sans-serif;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-zinc-900;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-zinc-500 rounded-full; 
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-zinc-400;
+  }
+  
+  /* Selection */
+  ::selection {
+    @apply bg-zinc-700 text-white;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bg-gradient-radial {
+    background-image: radial-gradient(ellipse at center, var(--tw-gradient-stops));
+  }
+  
+  .bg-gradient-conic {
+    background-image: conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops));
+  }
+}
+
+/* Hero gradient mesh animation */
+@layer components {
+  .hero-gradient-mesh {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .hero-gradient-mesh::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(59, 130, 246, 0.3), transparent),
+      radial-gradient(ellipse 60% 40% at 50% 30%, rgba(139, 92, 246, 0.2), transparent),
+      radial-gradient(ellipse 80% 50% at 50% 100%, rgba(249, 115, 22, 0.35), transparent),
+      radial-gradient(ellipse 40% 30% at 70% 80%, rgba(236, 72, 153, 0.25), transparent);
+    filter: blur(60px);
+    animation: gradient-shift 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      transform: translateX(-50%) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-50%) scale(1.05);
+      opacity: 0.9;
+    }
+  }
+
+  /* Creative "A" Shape Gradient Background */
+  .noise-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    overflow: hidden;
+  }
+
+  .noise-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      /* Left leg of "A" - teal/cyan */
+      radial-gradient(ellipse 25% 45% at 30% 70%, rgba(26, 154, 154, 0.7), transparent 70%),
+      radial-gradient(ellipse 20% 35% at 35% 50%, rgba(45, 212, 191, 0.5), transparent 60%),
+
+      /* Right leg of "A" - purple/magenta */
+      radial-gradient(ellipse 25% 45% at 70% 70%, rgba(168, 85, 247, 0.65), transparent 70%),
+      radial-gradient(ellipse 20% 35% at 65% 50%, rgba(236, 72, 153, 0.5), transparent 60%),
+
+      /* Peak/top of "A" - bright teal glow */
+      radial-gradient(ellipse 30% 25% at 50% 15%, rgba(20, 184, 166, 0.8), transparent 70%),
+      radial-gradient(ellipse 20% 15% at 50% 20%, rgba(94, 234, 212, 0.6), transparent 60%),
+
+      /* Crossbar of "A" - warm orange/coral */
+      radial-gradient(ellipse 35% 12% at 50% 55%, rgba(251, 146, 60, 0.55), transparent 70%),
+      radial-gradient(ellipse 25% 8% at 50% 52%, rgba(252, 211, 77, 0.4), transparent 60%),
+
+      /* Inner glow connecting the shape */
+      radial-gradient(ellipse 40% 50% at 50% 45%, rgba(26, 154, 154, 0.25), transparent 60%),
+
+      /* Ambient glow at bottom */
+      radial-gradient(ellipse 60% 30% at 50% 95%, rgba(139, 92, 246, 0.3), transparent 70%);
+    filter: blur(50px);
+    animation: a-shape-breathe 8s ease-in-out infinite alternate;
+  }
+
+  .noise-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      /* Extra sparkle highlights */
+      radial-gradient(circle 80px at 35% 35%, rgba(45, 212, 191, 0.3), transparent 50%),
+      radial-gradient(circle 60px at 65% 35%, rgba(236, 72, 153, 0.25), transparent 50%),
+      radial-gradient(circle 100px at 50% 25%, rgba(255, 255, 255, 0.1), transparent 40%);
+    filter: blur(30px);
+    animation: a-shape-sparkle 6s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes a-shape-breathe {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+  }
+
+  @keyframes a-shape-sparkle {
+    0% {
+      transform: scale(1) rotate(0deg);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.02) rotate(1deg);
+      opacity: 1;
+    }
+  }
+
+  /* Alternative: Inline noise background for components */
+  .noise-texture {
+    position: relative;
+  }
+
+  .noise-texture::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    border-radius: inherit;
+  }
+
+  /* Teal gradient mesh - for hero sections */
+  .teal-gradient-mesh {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .teal-gradient-mesh::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1400px;
+    height: 100%;
+    background:
+      /* Main teal glow */
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(26, 154, 154, 0.5), transparent 60%),
+      /* Secondary teal highlights */
+      radial-gradient(ellipse 50% 40% at 25% 30%, rgba(45, 180, 180, 0.3), transparent 50%),
+      radial-gradient(ellipse 50% 40% at 75% 25%, rgba(20, 140, 140, 0.35), transparent 50%),
+      /* Grey depth layers */
+      radial-gradient(ellipse 80% 60% at 50% 60%, rgba(50, 50, 60, 0.4), transparent 55%),
+      /* Bottom teal accent */
+      radial-gradient(ellipse 60% 40% at 50% 95%, rgba(26, 154, 154, 0.3), transparent 50%);
+    filter: blur(60px);
+    animation: teal-mesh-shift 10s ease-in-out infinite alternate;
+  }
+
+  .teal-gradient-mesh::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  @keyframes teal-mesh-shift {
+    0% {
+      transform: translateX(-50%) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-50%) scale(1.06);
+      opacity: 0.88;
+    }
+  }
+}

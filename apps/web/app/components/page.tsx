@@ -1,0 +1,89 @@
+import { Suspense } from 'react'
+import { getComponents, getCategories } from '@/lib/db/queries'
+import { FeaturedSection } from '@/components/projects/featured-section'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Search } from 'lucide-react'
+
+interface PageProps {
+  searchParams: Promise<{ category?: string; search?: string }>
+}
+
+async function ComponentsContent({ searchParams }: { searchParams: { category?: string; search?: string } }): Promise<React.ReactElement> {
+  const [components, categories] = await Promise.all([
+    getComponents({ category: searchParams.category, search: searchParams.search, limit: 100 }),
+    getCategories(),
+  ])
+
+  // Group components by category
+  const componentsByCategory: Record<string, typeof components> = {}
+  for (const component of components) {
+    const cat = component.category || 'Uncategorized'
+    if (!componentsByCategory[cat]) {
+      componentsByCategory[cat] = []
+    }
+    componentsByCategory[cat].push(component)
+  }
+
+  return <FeaturedSection componentsByCategory={componentsByCategory} categories={categories} />
+}
+
+function ComponentsSkeleton(): React.ReactElement {
+  return (
+    <div className="space-y-12 pt-6">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="space-y-4">
+          <Skeleton className="h-8 w-40" />
+          <div className="flex gap-4 overflow-hidden">
+            {Array.from({ length: 4 }).map((_, j) => (
+              <Skeleton key={j} className="w-72 h-80 rounded-3xl shrink-0" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default async function ComponentsPage({ searchParams }: PageProps): Promise<React.ReactElement> {
+  const params = await searchParams
+
+  return (
+    <div className="min-h-[calc(100vh-32px)]">
+      <div className="bg-[#323333] rounded-2xl px-6 sm:px-8 lg:px-10 py-10 h-full">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Components</h1>
+          <p className="text-zinc-400">
+            Browse our collection of beautiful, animated React components.
+          </p>
+        </div>
+
+        {/* Search */}
+        <div className="mb-12">
+          <form className="max-w-md relative flex items-center">
+            <div className="relative w-full shadow-[0_4px_20px_-2px_rgba(0,0,0,0.5)] rounded-full">
+              <input
+                type="search"
+                name="search"
+                defaultValue={params.search}
+                placeholder="Search components..."
+                className="w-full pl-6 pr-14 py-3.5 bg-zinc-900 text-zinc-100 rounded-full border-none focus:outline-none focus:ring-1 focus:ring-zinc-700 placeholder:text-zinc-500 text-sm"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 top-1.5 p-2 bg-zinc-100 rounded-full text-zinc-900 hover:bg-white transition-colors hover:scale-105 active:scale-95"
+              >
+                <Search className="w-4 h-4" strokeWidth={2.5} />
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Content */}
+        <Suspense fallback={<ComponentsSkeleton />}>
+          <ComponentsContent searchParams={params} />
+        </Suspense>
+      </div>
+    </div>
+  )
+}

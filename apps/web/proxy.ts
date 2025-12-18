@@ -14,7 +14,7 @@ function isProtectedRoute(pathname: string): boolean {
   return PROTECTED_ROUTES.some((route) => pathname.startsWith(route))
 }
 
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl
 
   let supabaseResponse = NextResponse.next({ request })
@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("Missing Supabase environment variables in middleware")
+    console.error("Missing Supabase environment variables in proxy")
     return supabaseResponse
   }
 

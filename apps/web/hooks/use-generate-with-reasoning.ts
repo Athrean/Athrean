@@ -9,7 +9,6 @@ import { saveComponent } from '@/app/actions/component'
 import type { ReasoningStep, ContextUsage } from '@/types/reasoning'
 import { calculateCost, MODEL_PRICING } from '@/types/reasoning'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 const DEFAULT_MODEL = 'anthropic/claude-3.5-sonnet'
 
 interface StreamChunk {
@@ -59,7 +58,7 @@ export function useGenerateWithReasoning(): UseGenerateWithReasoningReturn {
 
       try {
         const endpoint = useReasoning ? '/generate-with-reasoning' : '/generate'
-        const response = await fetch(`${API_URL}${endpoint}`, {
+        const response = await fetch(`/api${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

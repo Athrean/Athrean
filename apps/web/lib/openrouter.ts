@@ -9,7 +9,7 @@ interface StreamCompletionOptions {
   includeReasoning?: boolean
 }
 
-interface StreamChunk {
+export interface StreamChunk {
   type: 'content' | 'reasoning' | 'usage'
   content?: string
   reasoning?: ReasoningStep
@@ -162,7 +162,7 @@ export async function* streamCompletion(
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+      'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
       'X-Title': 'Athrean',
     },
     body: JSON.stringify({
@@ -218,7 +218,6 @@ export async function* streamCompletion(
   }
 }
 
-// Enhanced streaming with structured chunks for reasoning
 export async function* streamCompletionWithReasoning(
   options: StreamCompletionOptions
 ): AsyncGenerator<StreamChunk> {
@@ -234,7 +233,7 @@ export async function* streamCompletionWithReasoning(
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+      'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
       'X-Title': 'Athrean',
     },
     body: JSON.stringify({
@@ -260,7 +259,6 @@ export async function* streamCompletionWithReasoning(
 
   const decoder = new TextDecoder()
   let buffer = ''
-  let fullContent = ''
   let inThinking = false
   let thinkingBuffer = ''
   let currentStepIndex = 0
@@ -297,8 +295,6 @@ export async function* streamCompletionWithReasoning(
 
           const content = json.choices?.[0]?.delta?.content
           if (!content) continue
-
-          fullContent += content
 
           // Parse thinking tags in real-time
           if (content.includes('<thinking>')) {

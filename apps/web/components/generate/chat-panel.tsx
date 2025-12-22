@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import type { ChatMessage, ReasoningStep, ContextUsage, Checkpoint } from '@/types'
 import { MessageBubble, TypingIndicator } from './chat/chat-message'
 import { ChatInput } from './chat/chat-input'
-import { Reasoning } from './reasoning/reasoning'
+import { ChainOfThought } from './chain-of-thought'
 import { CheckpointDivider, AddCheckpointButton } from './reasoning/checkpoint'
 import { EmptyState } from './empty-state'
 import { ProjectDropdown } from './project-dropdown'
@@ -132,11 +132,9 @@ export function ChatPanel({
               ))}
             </AnimatePresence>
 
-            {/* Reasoning - limited height shadow text */}
-            {isGenerating && currentReasoning.length > 0 && (
-              <div className="max-h-[100px] overflow-hidden">
-                <Reasoning steps={currentReasoning} />
-              </div>
+            {/* Chain of Thought - beautiful collapsible display */}
+            {currentReasoning.length > 0 && (
+              <ChainOfThought steps={currentReasoning} isComplete={!isGenerating} />
             )}
 
             {isGenerating && messages[messages.length - 1]?.role === 'user' && (

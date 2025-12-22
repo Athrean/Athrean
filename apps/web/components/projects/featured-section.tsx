@@ -2,10 +2,10 @@
 
 import Link from 'next/link'
 import { Carousel, SimpleCard } from '@/components/ui/apple-cards-carousel'
-import type { Component } from '@/types'
+import type { RegistryItem } from '@/types'
 
 interface FeaturedSectionProps {
-  componentsByCategory: Record<string, Component[]>
+  itemsByCategory: Record<string, RegistryItem[]>
   categories: string[]
 }
 
@@ -18,6 +18,11 @@ const defaultImages = [
 ]
 
 const categoryImageMap: Record<string, string[]> = {
+  ai: [
+    'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&q=80',
+    'https://images.unsplash.com/photo-1676299081847-824916de030a?w=600&q=80',
+    'https://images.unsplash.com/photo-1684369175833-4b445ad6bfb5?w=600&q=80',
+  ],
   buttons: [
     'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&q=80',
     'https://images.unsplash.com/photo-1557683316-973673baf926?w=600&q=80',
@@ -53,8 +58,8 @@ function formatCategoryName(category: string): string {
     .join(' ')
 }
 
-export function FeaturedSection({ componentsByCategory, categories }: FeaturedSectionProps): React.ReactElement {
-  const sortedCategories = Object.keys(componentsByCategory).sort()
+export function FeaturedSection({ itemsByCategory, categories }: FeaturedSectionProps): React.ReactElement {
+  const sortedCategories = Object.keys(itemsByCategory).sort()
 
   if (sortedCategories.length === 0) {
     return (
@@ -75,15 +80,15 @@ export function FeaturedSection({ componentsByCategory, categories }: FeaturedSe
   return (
     <div className="space-y-12 pt-2">
       {sortedCategories.map((category) => {
-        const components = componentsByCategory[category]
-        if (!components || components.length === 0) return null
+        const items = itemsByCategory[category]
+        if (!items || items.length === 0) return null
 
-        const cards = components.map((component, index) => (
-          <Link key={component.id} href={`/components/${component.slug}`}>
+        const cards = items.map((item, index) => (
+          <Link key={item.id} href={`/components/${item.name}`}>
             <SimpleCard
               card={{
-                src: component.previewUrl || getCategoryImage(category, index),
-                title: component.name,
+                src: getCategoryImage(category, index),
+                title: item.title,
                 category: formatCategoryName(category),
               }}
             />
@@ -97,7 +102,7 @@ export function FeaturedSection({ componentsByCategory, categories }: FeaturedSe
                 {formatCategoryName(category)}
               </h2>
               <span className="text-sm text-zinc-500">
-                {components.length} {components.length === 1 ? 'component' : 'components'}
+                {items.length} {items.length === 1 ? 'component' : 'components'}
               </span>
             </div>
             <Carousel items={cards} />

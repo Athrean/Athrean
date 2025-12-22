@@ -135,3 +135,12 @@ export function DropdownMenuItem({
 export function DropdownMenuSeparator({ className }: { className?: string }): React.ReactElement {
     return <div className={cn('my-1 h-px bg-zinc-800', className)} />
 }
+
+interface DropdownMenuGroupProps {
+    children: React.ReactNode
+    className?: string
+}
+
+export function DropdownMenuGroup({ children, className }: DropdownMenuGroupProps): React.ReactElement {
+    return <div className={cn('', className)}>{children}</div>
+}

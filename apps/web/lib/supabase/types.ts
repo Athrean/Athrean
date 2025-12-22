@@ -12,66 +12,155 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      components: {
+      categories: {
         Row: {
           id: string
-          slug: string
           name: string
           description: string | null
-          category: string
-          tags: string[]
-          code: string
-          dependencies: Json
-          preview_url: string | null
-          is_pro: boolean
-          view_count: number
-          copy_count: number
+          icon: string | null
+          display_order: number
+          is_active: boolean
           created_at: string
           updated_at: string
         }
         Insert: {
-          id?: string
-          slug: string
+          id: string
           name: string
           description?: string | null
-          category: string
-          tags?: string[]
-          code: string
-          dependencies?: Json
-          preview_url?: string | null
-          is_pro?: boolean
-          view_count?: number
-          copy_count?: number
+          icon?: string | null
+          display_order?: number
+          is_active?: boolean
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
-          slug?: string
           name?: string
           description?: string | null
-          category?: string
-          tags?: string[]
-          code?: string
-          dependencies?: Json
-          preview_url?: string | null
-          is_pro?: boolean
-          view_count?: number
-          copy_count?: number
+          icon?: string | null
+          display_order?: number
+          is_active?: boolean
           created_at?: string
           updated_at?: string
         }
         Relationships: []
       }
-      user_components: {
+      registry_items: {
+        Row: {
+          id: string
+          name: string
+          type: string
+          title: string
+          description: string | null
+          author: string
+          category_id: string | null
+          registry_dependencies: string[]
+          dependencies: Json
+          dev_dependencies: Json
+          files: Json
+          iframe_height: string
+          is_pro: boolean
+          is_featured: boolean
+          tags: string[]
+          install_count: number
+          view_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          type?: string
+          title: string
+          description?: string | null
+          author?: string
+          category_id?: string | null
+          registry_dependencies?: string[]
+          dependencies?: Json
+          dev_dependencies?: Json
+          files?: Json
+          iframe_height?: string
+          is_pro?: boolean
+          is_featured?: boolean
+          tags?: string[]
+          install_count?: number
+          view_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          type?: string
+          title?: string
+          description?: string | null
+          author?: string
+          category_id?: string | null
+          registry_dependencies?: string[]
+          dependencies?: Json
+          dev_dependencies?: Json
+          files?: Json
+          iframe_height?: string
+          is_pro?: boolean
+          is_featured?: boolean
+          tags?: string[]
+          install_count?: number
+          view_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'registry_items_category_id_fkey'
+            columns: ['category_id']
+            referencedRelation: 'categories'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      user_favorites: {
+        Row: {
+          id: string
+          user_id: string
+          registry_item_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          registry_item_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          registry_item_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_favorites_user_id_fkey'
+            columns: ['user_id']
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_favorites_registry_item_id_fkey'
+            columns: ['registry_item_id']
+            referencedRelation: 'registry_items'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      user_generations: {
         Row: {
           id: string
           user_id: string
           name: string
+          prompt: string
           code: string
-          prompt: string | null
-          source: 'generated' | 'forked' | 'saved'
-          parent_id: string | null
+          model: string | null
+          duration_ms: number | null
           is_public: boolean
           created_at: string
           updated_at: string
@@ -80,10 +169,10 @@ export interface Database {
           id?: string
           user_id: string
           name: string
+          prompt: string
           code: string
-          prompt?: string | null
-          source?: 'generated' | 'forked' | 'saved'
-          parent_id?: string | null
+          model?: string | null
+          duration_ms?: number | null
           is_public?: boolean
           created_at?: string
           updated_at?: string
@@ -92,60 +181,17 @@ export interface Database {
           id?: string
           user_id?: string
           name?: string
+          prompt?: string
           code?: string
-          prompt?: string | null
-          source?: 'generated' | 'forked' | 'saved'
-          parent_id?: string | null
+          model?: string | null
+          duration_ms?: number | null
           is_public?: boolean
           created_at?: string
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: 'user_components_user_id_fkey'
-            columns: ['user_id']
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'user_components_parent_id_fkey'
-            columns: ['parent_id']
-            referencedRelation: 'components'
-            referencedColumns: ['id']
-          }
-        ]
-      }
-      generations: {
-        Row: {
-          id: string
-          user_id: string
-          prompt: string
-          result_code: string | null
-          model: string
-          duration_ms: number | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          prompt: string
-          result_code?: string | null
-          model: string
-          duration_ms?: number | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          prompt?: string
-          result_code?: string | null
-          model?: string
-          duration_ms?: number | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'generations_user_id_fkey'
+            foreignKeyName: 'user_generations_user_id_fkey'
             columns: ['user_id']
             referencedRelation: 'users'
             referencedColumns: ['id']
@@ -225,14 +271,6 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      increment_view_count: {
-        Args: { component_slug: string }
-        Returns: undefined
-      }
-      increment_copy_count: {
-        Args: { component_slug: string }
-        Returns: undefined
-      }
       decrement_credits: {
         Args: { p_user_id: string }
         Returns: number
@@ -245,9 +283,20 @@ export interface Database {
         Args: { new_username: string }
         Returns: boolean
       }
+      increment_install_count: {
+        Args: { item_name: string }
+        Returns: undefined
+      }
+      increment_registry_view_count: {
+        Args: { item_name: string }
+        Returns: undefined
+      }
+      get_registry_item: {
+        Args: { item_name: string }
+        Returns: Json
+      }
     }
     Enums: {
-      component_source: 'generated' | 'forked' | 'saved'
       user_plan: 'free' | 'pro'
     }
     CompositeTypes: {

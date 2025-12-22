@@ -29,7 +29,7 @@ export function CodeBlock({
   const lines = code.split('\n')
 
   return (
-    <div className={cn('relative group rounded-xl bg-zinc-950 border border-zinc-800', className)}>
+    <div className={cn('relative group rounded-xl bg-zinc-950 border border-zinc-800 min-w-0', className)}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800">
         <span className="text-xs text-zinc-500 uppercase tracking-wider">{language}</span>
@@ -48,20 +48,20 @@ export function CodeBlock({
       </div>
 
       {/* Code content */}
-      <div className="overflow-x-auto">
-        <pre className="p-4 text-sm leading-relaxed">
-          <code className="text-zinc-300">
+      <div className="overflow-x-auto min-w-0 w-full">
+        <pre className="p-4 text-sm leading-relaxed m-0 min-w-0 w-full">
+          <code className="text-zinc-300 block min-w-0 w-full">
             {showLineNumbers ? (
               lines.map((line, i) => (
-                <div key={i} className="flex">
-                  <span className="select-none text-zinc-600 w-8 shrink-0 text-right pr-4">
+                <div key={i} className="flex min-w-0 w-full">
+                  <span className="select-none text-zinc-600 w-8 shrink-0 text-right pr-4 flex-shrink-0">
                     {i + 1}
                   </span>
-                  <span>{line}</span>
+                  <span className="min-w-0 flex-1 overflow-x-auto block">{line}</span>
                 </div>
               ))
             ) : (
-              code
+              <span className="block min-w-0 w-full overflow-x-auto">{code}</span>
             )}
           </code>
         </pre>

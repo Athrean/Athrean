@@ -3,22 +3,22 @@
 import { useState } from 'react'
 import { Check, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { trackCopy } from '@/lib/db/mutations'
+import { trackInstall } from '@/lib/db/mutations'
 
 interface CopyButtonProps {
   code: string
-  slug: string
+  name: string
 }
 
-export function CopyButton({ code, slug }: CopyButtonProps): React.ReactElement {
+export function CopyButton({ code, name }: CopyButtonProps): React.ReactElement {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async (): Promise<void> => {
     await navigator.clipboard.writeText(code)
     setCopied(true)
-    
-    // Track the copy (fire and forget)
-    trackCopy(slug).catch(() => {
+
+    // Track the copy/install (fire and forget)
+    trackInstall(name).catch(() => {
       // Ignore tracking errors
     })
 
@@ -41,4 +41,3 @@ export function CopyButton({ code, slug }: CopyButtonProps): React.ReactElement 
     </Button>
   )
 }
-

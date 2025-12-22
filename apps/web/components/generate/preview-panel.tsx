@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import type { PreviewPanelProps, Tab, Device } from "./preview/types";
 import { PreviewHeader } from "./preview/preview-header";
 import { SandpackWrapper, buildFiles } from "./preview/sandpack-wrapper";
-import { saveComponent } from "@/app/actions/component";
+import { saveGeneration } from "@/app/actions/component";
 import { toast } from "sonner";
 import { LoadingOverlay, UpdatingOverlay, SlowWarningOverlay } from "./preview/preview-overlays";
 import { PreviewEmptyState } from "./preview/preview-empty-state";
@@ -38,10 +38,10 @@ export function PreviewPanel({ code, isLoading }: PreviewPanelProps): React.Reac
 
     setIsSaving(true);
     try {
-      const result = await saveComponent({
+      const result = await saveGeneration({
         name: `Generated Component ${new Date().toLocaleTimeString()}`,
         code: code,
-        source: 'generated',
+        prompt: 'Manually saved from preview',
         isPublic: false
       });
 
@@ -107,7 +107,7 @@ export function PreviewPanel({ code, isLoading }: PreviewPanelProps): React.Reac
           )}
 
           {activeTab === "code" && code && (
-            <div className="h-full overflow-auto p-4 bg-zinc-950">
+            <div className="h-full overflow-auto p-4 bg-zinc-900">
               <pre className="text-sm font-mono leading-relaxed text-zinc-300 whitespace-pre-wrap">
                 {code}
               </pre>

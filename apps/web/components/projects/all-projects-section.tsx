@@ -1,29 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { Sparkles, GitFork, Code } from 'lucide-react'
+import { Sparkles, Clock } from 'lucide-react'
 import { FileFolder3D } from '@/components/ui/file-folder-3d'
-import type { UserComponent } from '@/types'
+import type { UserGeneration } from '@/types'
 
 interface AllProjectsSectionProps {
-  projects: UserComponent[]
+  projects: UserGeneration[]
 }
 
-const sourceIcons = {
-  generated: Sparkles,
-  forked: GitFork,
-  saved: Code,
-}
-
-const sourceLabels = {
-  generated: 'AI Generated',
-  forked: 'Forked',
-  saved: 'Saved',
-}
-
-function ProjectCard({ project }: { project: UserComponent }): React.ReactElement {
+function ProjectCard({ project }: { project: UserGeneration }): React.ReactElement {
   const hue = (project.name.charCodeAt(0) * 15) % 360
-  const SourceIcon = sourceIcons[project.source]
 
   return (
     <Link href={`/generate?project=${project.id}`} className="block group">
@@ -36,9 +23,14 @@ function ProjectCard({ project }: { project: UserComponent }): React.ReactElemen
         {/* Source Badge */}
         <div className="flex items-center gap-1.5 mb-auto">
           <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-zinc-900/60 text-xs text-zinc-400">
-            <SourceIcon className="w-3 h-3" />
-            {sourceLabels[project.source]}
+            <Sparkles className="w-3 h-3" />
+            AI Generated
           </span>
+          {project.model && (
+            <span className="px-2 py-1 rounded-full bg-zinc-900/60 text-xs text-zinc-500">
+              {project.model}
+            </span>
+          )}
         </div>
 
         {/* Content */}
@@ -51,9 +43,10 @@ function ProjectCard({ project }: { project: UserComponent }): React.ReactElemen
               {project.prompt}
             </p>
           )}
-          <p className="text-xs text-zinc-600 mt-2">
+          <div className="flex items-center gap-1 text-xs text-zinc-600 mt-2">
+            <Clock className="w-3 h-3" />
             {new Date(project.createdAt).toLocaleDateString()}
-          </p>
+          </div>
         </div>
       </div>
     </Link>

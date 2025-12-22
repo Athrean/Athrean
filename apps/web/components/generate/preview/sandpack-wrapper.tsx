@@ -60,7 +60,7 @@ function SandpackInner({ device, onReady, onReset }: SandpackInnerProps): React.
         <AlertTriangle className="w-10 h-10 text-amber-500" />
         <div className="text-center">
           <h3 className="text-sm font-medium text-zinc-200 mb-2">Preview Error</h3>
-          <p className="text-xs text-zinc-400 max-w-md break-words line-clamp-4">{error}</p>
+          <p className="text-xs text-zinc-400 max-w-md wrap-break-word line-clamp-4">{error}</p>
         </div>
         <button
           onClick={handleRetry}

@@ -3,9 +3,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { SaveComponentInput } from '@/types'
+import type { SaveGenerationInput } from '@/types'
 
-export async function saveComponent(input: SaveComponentInput) {
+// Save a user-generated component (AI generated)
+export async function saveGeneration(input: SaveGenerationInput) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -14,29 +15,30 @@ export async function saveComponent(input: SaveComponentInput) {
     }
 
     const { data, error } = await supabase
-        .from('user_components')
+        .from('user_generations')
         .insert({
             user_id: user.id,
             name: input.name,
             code: input.code,
             prompt: input.prompt,
-            source: input.source,
-            parent_id: input.parentId,
+            model: input.model ?? null,
+            duration_ms: input.durationMs ?? null,
             is_public: input.isPublic ?? false,
         })
         .select()
         .single()
 
     if (error) {
-        console.error('Error saving component:', error)
-        return { error: 'Failed to save component' }
+        console.error('Error saving generation:', error)
+        return { error: 'Failed to save generation' }
     }
 
     revalidatePath('/projects')
     return { data }
 }
 
-export async function toggleStar(componentId: string, name: string, code: string, isStarred: boolean) {
+// Toggle favorite status for a registry item
+export async function toggleFavorite(registryItemId: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -44,49 +46,51 @@ export async function toggleStar(componentId: string, name: string, code: string
         redirect('/auth/login')
     }
 
-    if (isStarred) {
-        // Unstar = Delete the saved component reference
-        // We need to find the user_component that corresponds to this component
-        // Assuming we are "unstarring" a component we previously saved.
-        // However, we might need the ID of the *user_component* entry, not the original component ID.
-        // If we are passed the original component ID (parentId), we delete the entry with that parentId.
+    // Check if already favorited
+    const { data: existing } = await supabase
+        .from('user_favorites')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('registry_item_id', registryItemId)
+        .single()
 
+    if (existing) {
+        // Remove favorite
         const { error } = await supabase
-            .from('user_components')
+            .from('user_favorites')
             .delete()
-            .eq('user_id', user.id)
-            .eq('parent_id', componentId)
-            .eq('source', 'saved')
+            .eq('id', existing.id)
 
         if (error) {
-            console.error('Error unstarring component:', error)
-            return { error: 'Failed to unstar component' }
+            console.error('Error removing favorite:', error)
+            return { error: 'Failed to remove favorite' }
         }
+
+        revalidatePath('/projects')
+        revalidatePath('/favorites')
+        return { success: true, isFavorited: false }
     } else {
-        // Star = Save as "saved" source
+        // Add favorite
         const { error } = await supabase
-            .from('user_components')
+            .from('user_favorites')
             .insert({
                 user_id: user.id,
-                name: name,
-                code: code,
-                source: 'saved',
-                parent_id: componentId, // Reference to original
-                is_public: false,
+                registry_item_id: registryItemId,
             })
 
         if (error) {
-            console.error('Error starring component:', error)
-            return { error: 'Failed to star component' }
+            console.error('Error adding favorite:', error)
+            return { error: 'Failed to add favorite' }
         }
-    }
 
-    revalidatePath('/projects')
-    revalidatePath('/starred')
-    return { success: true }
+        revalidatePath('/projects')
+        revalidatePath('/favorites')
+        return { success: true, isFavorited: true }
+    }
 }
 
-export async function renameProject(projectId: string, newName: string) {
+// Rename a user generation
+export async function renameGeneration(generationId: string, newName: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -95,17 +99,63 @@ export async function renameProject(projectId: string, newName: string) {
     }
 
     const { error } = await supabase
-        .from('user_components')
+        .from('user_generations')
         .update({ name: newName })
-        .eq('id', projectId)
+        .eq('id', generationId)
         .eq('user_id', user.id)
 
     if (error) {
-        console.error('Error renaming project:', error)
-        return { error: 'Failed to rename project' }
+        console.error('Error renaming generation:', error)
+        return { error: 'Failed to rename generation' }
     }
 
     revalidatePath('/projects')
     revalidatePath('/generate')
     return { success: true }
+}
+
+// Delete a user generation
+export async function deleteGeneration(generationId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        redirect('/auth/login')
+    }
+
+    const { error } = await supabase
+        .from('user_generations')
+        .delete()
+        .eq('id', generationId)
+        .eq('user_id', user.id)
+
+    if (error) {
+        console.error('Error deleting generation:', error)
+        return { error: 'Failed to delete generation' }
+    }
+
+    revalidatePath('/projects')
+    return { success: true }
+}
+
+// Track install count for a registry item
+export async function trackInstall(itemName: string) {
+    const supabase = await createClient()
+
+    const { error } = await supabase.rpc('increment_install_count', { item_name: itemName })
+
+    if (error) {
+        console.error('Error tracking install:', error)
+    }
+}
+
+// Track view count for a registry item  
+export async function trackView(itemName: string) {
+    const supabase = await createClient()
+
+    const { error } = await supabase.rpc('increment_registry_view_count', { item_name: itemName })
+
+    if (error) {
+        console.error('Error tracking view:', error)
+    }
 }

@@ -2,98 +2,124 @@
 
 import { createClient } from '@/lib/supabase/client'
 import type {
-  SaveComponentInput,
+  SaveGenerationInput,
   LogGenerationInput,
-  UserComponent,
+  UserGeneration,
   UserProfile,
   UpdateProfileInput,
 } from '@/types'
 
-export async function saveUserComponent(data: SaveComponentInput): Promise<UserComponent | null> {
+// Save a user-generated AI component
+export async function saveUserGeneration(data: SaveGenerationInput): Promise<UserGeneration | null> {
   const supabase = createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     throw new Error('User not authenticated')
   }
 
-  const { data: component, error } = await supabase
-    .from('user_components')
+  const { data: generation, error } = await supabase
+    .from('user_generations')
     .insert({
       user_id: user.id,
       name: data.name,
       code: data.code,
-      prompt: data.prompt ?? null,
-      source: data.source,
-      parent_id: data.parentId ?? null,
+      prompt: data.prompt,
+      model: data.model ?? null,
+      duration_ms: data.durationMs ?? null,
       is_public: data.isPublic ?? false,
     })
     .select()
     .single()
 
   if (error) {
-    console.error('Error saving component:', error)
+    console.error('Error saving generation:', error)
     return null
   }
 
   return {
-    id: component.id,
-    userId: component.user_id,
-    name: component.name,
-    code: component.code,
-    prompt: component.prompt,
-    source: component.source,
-    parentId: component.parent_id,
-    isPublic: component.is_public,
-    createdAt: component.created_at,
-    updatedAt: component.updated_at,
+    id: generation.id,
+    userId: generation.user_id,
+    name: generation.name,
+    code: generation.code,
+    prompt: generation.prompt,
+    model: generation.model,
+    durationMs: generation.duration_ms,
+    isPublic: generation.is_public,
+    createdAt: generation.created_at,
+    updatedAt: generation.updated_at,
   }
 }
 
-export async function deleteUserComponent(id: string): Promise<void> {
+// Delete a user generation
+export async function deleteUserGeneration(id: string): Promise<void> {
   const supabase = createClient()
-  
+
   const { error } = await supabase
-    .from('user_components')
+    .from('user_generations')
     .delete()
     .eq('id', id)
 
   if (error) {
-    console.error('Error deleting component:', error)
-    throw new Error('Failed to delete component')
+    console.error('Error deleting generation:', error)
+    throw new Error('Failed to delete generation')
   }
 }
 
-export async function trackCopy(slug: string): Promise<void> {
+// Track install count for registry items
+export async function trackInstall(itemName: string): Promise<void> {
   const supabase = createClient()
-  
-  await supabase.rpc('increment_copy_count', { component_slug: slug })
+
+  await supabase.rpc('increment_install_count', { item_name: itemName })
 }
 
-export async function trackView(slug: string): Promise<void> {
+// Track view count for registry items
+export async function trackView(itemName: string): Promise<void> {
   const supabase = createClient()
-  
-  await supabase.rpc('increment_view_count', { component_slug: slug })
+
+  await supabase.rpc('increment_registry_view_count', { item_name: itemName })
 }
 
-export async function logGeneration(data: LogGenerationInput): Promise<void> {
+// Toggle favorite status for a registry item
+export async function toggleFavorite(registryItemId: string): Promise<boolean> {
   const supabase = createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return
+  if (!user) {
+    throw new Error('User not authenticated')
+  }
 
-  await supabase.from('generations').insert({
-    user_id: user.id,
-    prompt: data.prompt,
-    result_code: data.resultCode,
-    model: data.model,
-    duration_ms: data.durationMs,
-  })
+  // Check if already favorited
+  const { data: existing } = await supabase
+    .from('user_favorites')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('registry_item_id', registryItemId)
+    .single()
+
+  if (existing) {
+    // Remove favorite
+    await supabase
+      .from('user_favorites')
+      .delete()
+      .eq('id', existing.id)
+    return false
+  } else {
+    // Add favorite
+    await supabase
+      .from('user_favorites')
+      .insert({
+        user_id: user.id,
+        registry_item_id: registryItemId,
+      })
+    return true
+  }
 }
 
+// Decrement user credits
 export async function decrementCredits(): Promise<number> {
   const supabase = createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     throw new Error('User not authenticated')
@@ -109,6 +135,7 @@ export async function decrementCredits(): Promise<number> {
   return data as number
 }
 
+// Update user profile
 export async function updateUserProfile(input: UpdateProfileInput): Promise<UserProfile | null> {
   const supabase = createClient()
 
@@ -147,6 +174,7 @@ export async function updateUserProfile(input: UpdateProfileInput): Promise<User
   }
 }
 
+// Update username
 export async function updateUsername(newUsername: string): Promise<boolean> {
   const supabase = createClient()
 
@@ -166,4 +194,3 @@ export async function updateUsername(newUsername: string): Promise<boolean> {
 
   return data as boolean
 }
-

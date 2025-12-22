@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useCallback, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useGenerateStore } from '@/stores/generate-store'
 import { ChatPanel } from '@/components/generate/chat-panel'
 import { PreviewPanel } from '@/components/generate/preview-panel'
@@ -10,10 +11,14 @@ import { cn } from '@/lib/utils'
 
 export default function GeneratePage(): React.ReactElement {
   const hasInitialized = useRef(false)
+  const hasLoadedProject = useRef(false)
   const [sidebarWidth, setSidebarWidth] = useState(400)
   const [isResizing, setIsResizing] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  const searchParams = useSearchParams()
+  const projectId = searchParams.get('project')
 
   const {
     messages,
@@ -28,6 +33,7 @@ export default function GeneratePage(): React.ReactElement {
     baseComponent,
     currentProjectId,
     projectName,
+    loadProject,
   } = useGenerateStore()
 
   const { handleGenerate } = useGenerateWithReasoning()
@@ -41,6 +47,34 @@ export default function GeneratePage(): React.ReactElement {
     }
     checkAuth()
   }, [])
+
+  // Load project from URL parameter
+  useEffect(() => {
+    if (hasLoadedProject.current || !projectId || currentProjectId === projectId) return
+
+    const loadProjectFromUrl = async (): Promise<void> => {
+      try {
+        const response = await fetch(`/api/projects/${projectId}`)
+        if (!response.ok) {
+          console.error('Failed to load project:', response.statusText)
+          return
+        }
+
+        const project = await response.json()
+        loadProject({
+          id: project.id,
+          name: project.name,
+          code: project.code,
+          prompt: project.prompt,
+        })
+        hasLoadedProject.current = true
+      } catch (error) {
+        console.error('Error loading project:', error)
+      }
+    }
+
+    loadProjectFromUrl()
+  }, [projectId, currentProjectId, loadProject])
 
   // Resizing logic
   const startResizing = useCallback((): void => setIsResizing(true), [])

@@ -20,7 +20,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useGenerateStore } from '@/stores/generate-store'
-import { renameProject, toggleStar } from '@/app/actions/component'
+import { renameGeneration, toggleFavorite } from '@/app/actions/component'
 import { toast } from 'sonner'
 
 interface ProjectDropdownProps {
@@ -45,7 +45,7 @@ export function ProjectDropdown({ projectName, projectId }: ProjectDropdownProps
 
         setIsRenaming(true)
         try {
-            const result = await renameProject(projectId, newName.trim())
+            const result = await renameGeneration(projectId, newName.trim())
             if (result.error) {
                 toast.error('Failed to rename project')
             } else {
@@ -65,11 +65,11 @@ export function ProjectDropdown({ projectName, projectId }: ProjectDropdownProps
 
         setIsStarring(true)
         try {
-            const result = await toggleStar(projectId, projectName, '', false)
+            const result = await toggleFavorite(projectId)
             if (result.error) {
                 toast.error('Failed to star project')
             } else {
-                toast.success('Project starred')
+                toast.success(result.isFavorited ? 'Added to favorites' : 'Removed from favorites')
             }
         } catch {
             toast.error('An error occurred')

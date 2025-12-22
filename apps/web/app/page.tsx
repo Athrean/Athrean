@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { getFeaturedProjects, getUserComponents } from '@/lib/db/queries'
+import { getPublicGenerations, getUserGenerations } from '@/lib/db/queries'
 import { Skeleton } from '@/components/ui/skeleton'
 import { HeroSection } from '@/components/hero/hero-section'
 import { Navbar } from '@/components/navbar'
@@ -11,10 +11,10 @@ async function ProjectsCardWrapper(): Promise<React.ReactElement> {
   const { data: { user } } = await client.auth.getUser()
 
   // Get recent public projects (community)
-  const recentProjects = await getFeaturedProjects(8)
+  const recentProjects = await getPublicGenerations(8)
 
   // Get user's own projects if authenticated
-  const myProjects = user ? await getUserComponents(user.id) : []
+  const myProjects = user ? await getUserGenerations(user.id) : []
 
   return (
     <ProjectsCard
@@ -29,7 +29,7 @@ function ProjectsCardSkeleton(): React.ReactElement {
   return (
     <section className="py-8 px-4">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-3xl border border-zinc-800/60 p-6 md:p-8">
+        <div className="bg-linear-to-br from-zinc-900 to-zinc-950 rounded-3xl border border-zinc-800/60 p-6 md:p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
               <Skeleton className="h-4 w-20 mb-2" />
@@ -39,7 +39,7 @@ function ProjectsCardSkeleton(): React.ReactElement {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
+              <Skeleton key={i} className="aspect-4/3 rounded-xl" />
             ))}
           </div>
           <div className="flex items-center justify-between mt-6 pt-6 border-t border-zinc-800/60">

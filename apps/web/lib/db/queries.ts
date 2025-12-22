@@ -1,167 +1,285 @@
 import { createClient } from '@/lib/supabase/server'
-import type { Component, UserComponent, UserCredits, UserProfile } from '@/types'
 import type { User } from '@supabase/supabase-js'
 
-interface GetComponentsOptions {
-  category?: string
-  search?: string
-  limit?: number
-}
+// ============================================
+// Types
+// ============================================
 
-// Transform database row to Component type (snake_case to camelCase)
-function transformComponent(row: {
+export interface Category {
   id: string
-  slug: string
   name: string
   description: string | null
-  category: string
+  icon: string | null
+  displayOrder: number
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface RegistryItem {
+  id: string
+  name: string
+  type: string
+  title: string
+  description: string | null
+  author: string
+  categoryId: string | null
+  registryDependencies: string[]
+  dependencies: Record<string, string>
+  devDependencies: Record<string, string>
+  files: Array<{
+    path: string
+    content: string
+    type: string
+    target: string
+  }>
+  iframeHeight: string
+  isPro: boolean
+  isFeatured: boolean
   tags: string[]
+  installCount: number
+  viewCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UserFavorite {
+  id: string
+  userId: string
+  registryItemId: string
+  createdAt: string
+}
+
+export interface UserGeneration {
+  id: string
+  userId: string
+  name: string
+  prompt: string
   code: string
-  dependencies: unknown
-  preview_url: string | null
-  is_pro: boolean
-  view_count: number
-  copy_count: number
+  model: string | null
+  durationMs: number | null
+  isPublic: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UserCredits {
+  userId: string
+  credits: number
+  plan: 'free' | 'pro'
+  updatedAt: string
+}
+
+export interface UserProfile {
+  id: string
+  username: string | null
+  displayName: string | null
+  avatarUrl: string | null
+  bio: string | null
+  website: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+// ============================================
+// Transform functions
+// ============================================
+
+function transformCategory(row: {
+  id: string
+  name: string
+  description: string | null
+  icon: string | null
+  display_order: number
+  is_active: boolean
   created_at: string
   updated_at: string
-}): Component {
+}): Category {
   return {
     id: row.id,
-    slug: row.slug,
     name: row.name,
     description: row.description,
-    category: row.category,
-    tags: row.tags,
-    code: row.code,
-    dependencies: row.dependencies as Record<string, string>,
-    previewUrl: row.preview_url,
-    isPro: row.is_pro,
-    viewCount: row.view_count,
-    copyCount: row.copy_count,
+    icon: row.icon,
+    displayOrder: row.display_order,
+    isActive: row.is_active,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
 }
 
-// Transform database row to UserComponent type
-function transformUserComponent(row: {
+function transformRegistryItem(row: {
+  id: string
+  name: string
+  type: string
+  title: string
+  description: string | null
+  author: string
+  category_id: string | null
+  registry_dependencies: string[]
+  dependencies: unknown
+  dev_dependencies: unknown
+  files: unknown
+  iframe_height: string
+  is_pro: boolean
+  is_featured: boolean
+  tags: string[]
+  install_count: number
+  view_count: number
+  created_at: string
+  updated_at: string
+}): RegistryItem {
+  return {
+    id: row.id,
+    name: row.name,
+    type: row.type,
+    title: row.title,
+    description: row.description,
+    author: row.author,
+    categoryId: row.category_id,
+    registryDependencies: row.registry_dependencies,
+    dependencies: row.dependencies as Record<string, string>,
+    devDependencies: row.dev_dependencies as Record<string, string>,
+    files: row.files as RegistryItem['files'],
+    iframeHeight: row.iframe_height,
+    isPro: row.is_pro,
+    isFeatured: row.is_featured,
+    tags: row.tags,
+    installCount: row.install_count,
+    viewCount: row.view_count,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+function transformUserGeneration(row: {
   id: string
   user_id: string
   name: string
+  prompt: string
   code: string
-  prompt: string | null
-  source: 'generated' | 'forked' | 'saved'
-  parent_id: string | null
+  model: string | null
+  duration_ms: number | null
   is_public: boolean
   created_at: string
   updated_at: string
-}): UserComponent {
+}): UserGeneration {
   return {
     id: row.id,
     userId: row.user_id,
     name: row.name,
-    code: row.code,
     prompt: row.prompt,
-    source: row.source,
-    parentId: row.parent_id,
+    code: row.code,
+    model: row.model,
+    durationMs: row.duration_ms,
     isPublic: row.is_public,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
 }
 
-export async function getComponents(options: GetComponentsOptions = {}): Promise<Component[]> {
-  const supabase = await createClient()
-  const { category, search, limit = 50 } = options
+// ============================================
+// Category queries
+// ============================================
 
-  let query = supabase
-    .from('components')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(limit)
-
-  if (category) {
-    query = query.eq('category', category)
-  }
-
-  if (search) {
-    query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`)
-  }
-
-  const { data, error } = await query
-
-  if (error) {
-    console.error('Error fetching components:', error)
-    return []
-  }
-
-  return data.map(transformComponent)
-}
-
-export async function getComponentBySlug(slug: string): Promise<Component | null> {
+export async function getCategories(): Promise<Category[]> {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from('components')
+    .from('categories')
     .select('*')
-    .eq('slug', slug)
+    .eq('is_active', true)
+    .order('display_order', { ascending: true })
+
+  if (error || !data) {
+    console.error('Error fetching categories:', error)
+    return []
+  }
+
+  return data.map(transformCategory)
+}
+
+export async function getCategoryById(id: string): Promise<Category | null> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('id', id)
     .single()
 
   if (error || !data) {
     return null
   }
 
-  return transformComponent(data)
+  return transformCategory(data)
 }
 
-export async function getCategories(): Promise<string[]> {
-  const supabase = await createClient()
+// ============================================
+// Registry item queries
+// ============================================
 
-  const { data, error } = await supabase
-    .from('components')
-    .select('category')
-
-  if (error || !data) {
-    return []
-  }
-
-  // Get unique categories
-  const categories = [...new Set(data.map((row) => row.category))]
-  return categories.sort()
+interface GetRegistryItemsOptions {
+  categoryId?: string
+  search?: string
+  limit?: number
+  featured?: boolean
 }
 
-export async function getUserComponents(userId: string): Promise<UserComponent[]> {
+export async function getRegistryItems(options: GetRegistryItemsOptions = {}): Promise<RegistryItem[]> {
   const supabase = await createClient()
+  const { categoryId, search, limit = 50, featured } = options
 
-  const { data, error } = await supabase
-    .from('user_components')
+  let query = supabase
+    .from('registry_items')
     .select('*')
-    .eq('user_id', userId)
     .order('created_at', { ascending: false })
+    .limit(limit)
 
-  if (error || !data) {
+  if (categoryId) {
+    query = query.eq('category_id', categoryId)
+  }
+
+  if (featured !== undefined) {
+    query = query.eq('is_featured', featured)
+  }
+
+  if (search) {
+    query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,name.ilike.%${search}%`)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error('Error fetching registry items:', error)
     return []
   }
 
-  return data.map(transformUserComponent)
+  return data.map(transformRegistryItem)
 }
 
-export async function getUserSavedComponents(userId: string): Promise<UserComponent[]> {
+export async function getRegistryItemByName(name: string): Promise<RegistryItem | null> {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from('user_components')
+    .from('registry_items')
     .select('*')
-    .eq('user_id', userId)
-    .eq('source', 'saved')
-    .order('created_at', { ascending: false })
+    .eq('name', name)
+    .single()
 
   if (error || !data) {
-    return []
+    return null
   }
 
-  return data.map(transformUserComponent)
+  return transformRegistryItem(data)
 }
+
+export async function getFeaturedItems(limit: number = 6): Promise<RegistryItem[]> {
+  return getRegistryItems({ featured: true, limit })
+}
+
+// ============================================
+// User queries
+// ============================================
 
 export async function getUser(): Promise<User | null> {
   const supabase = await createClient()
@@ -256,54 +374,96 @@ export async function isUsernameAvailable(username: string): Promise<boolean> {
   return data as boolean
 }
 
-interface GetPublicProjectsOptions {
-  limit?: number
-  category?: 'generated' | 'forked' | 'saved' | 'all'
-}
+// ============================================
+// User favorites queries
+// ============================================
 
-// Get all public user-created projects (from prompts)
-export async function getPublicProjects(options: GetPublicProjectsOptions = {}): Promise<UserComponent[]> {
-  const supabase = await createClient()
-  const { limit = 50, category } = options
-
-  let query = supabase
-    .from('user_components')
-    .select('*')
-    .eq('is_public', true)
-    .order('created_at', { ascending: false })
-    .limit(limit)
-
-  // If category filter is provided, filter by source type
-  if (category && category !== 'all') {
-    query = query.eq('source', category as 'generated' | 'forked' | 'saved')
-  }
-
-  const { data, error } = await query
-
-  if (error) {
-    console.error('Error fetching public projects:', error)
-    return []
-  }
-
-  return data.map(transformUserComponent)
-}
-
-// Get featured/recent public projects for home page
-export async function getFeaturedProjects(limit: number = 6): Promise<UserComponent[]> {
+export async function getUserFavorites(userId: string): Promise<RegistryItem[]> {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from('user_components')
+    .from('user_favorites')
+    .select(`
+      registry_items (*)
+    `)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error || !data) {
+    console.error('Error fetching user favorites:', error)
+    return []
+  }
+
+  return data
+    .filter((row) => row.registry_items)
+    .map((row) => transformRegistryItem(row.registry_items as any))
+}
+
+export async function isItemFavorited(userId: string, itemId: string): Promise<boolean> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('user_favorites')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('registry_item_id', itemId)
+    .single()
+
+  return !error && !!data
+}
+
+// ============================================
+// User generations queries
+// ============================================
+
+export async function getUserGenerations(userId: string): Promise<UserGeneration[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('user_generations')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error || !data) {
+    console.error('Error fetching user generations:', error)
+    return []
+  }
+
+  return data.map(transformUserGeneration)
+}
+
+export async function getPublicGenerations(limit: number = 50): Promise<UserGeneration[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('user_generations')
     .select('*')
     .eq('is_public', true)
     .order('created_at', { ascending: false })
     .limit(limit)
 
-  if (error) {
-    console.error('Error fetching featured projects:', error)
+  if (error || !data) {
+    console.error('Error fetching public generations:', error)
     return []
   }
 
-  return data.map(transformUserComponent)
+  return data.map(transformUserGeneration)
+}
+
+export async function getGenerationById(id: string): Promise<UserGeneration | null> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('user_generations')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error || !data) {
+    return null
+  }
+
+  return transformUserGeneration(data)
 }
 

@@ -2,7 +2,9 @@
   "name": "athrean",
   "private": true,
   "packageManager": "bun@1.2.23",
-  "workspaces": ["apps/*"],
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
@@ -12,6 +14,7 @@
     "db:reset": "bunx supabase db reset",
     "db:diff": "bunx supabase db diff",
     "db:seed": "bun run scripts/seed.ts",
+    "db:seed-registry": "bun run scripts/seed-registry.ts",
     "db:migrate": "bunx supabase migration new",
     "db:status": "bunx supabase migration list",
     "db:types": "bunx supabase gen types typescript --project-id xqfpzlrehsxqwonrdwzh > apps/web/lib/supabase/types.ts"

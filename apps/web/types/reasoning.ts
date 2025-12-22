@@ -77,53 +77,34 @@ export interface CheckpointListProps {
   onRestore: (checkpoint: Checkpoint) => void
 }
 
-// Model pricing per 1M tokens (input/output)
+// Model pricing - now uses centralized registry
+// Re-export from registry for backward compatibility
+import {
+  getModel,
+  calculateModelCost,
+  MODEL_PRICING_MAP,
+  type ModelConfig,
+} from '@/lib/models/registry'
+
 export interface ModelPricing {
   input: number
   output: number
   contextWindow: number
 }
 
-export const MODEL_PRICING: Record<string, ModelPricing> = {
-  'anthropic/claude-3.5-sonnet': {
-    input: 3.0,
-    output: 15.0,
-    contextWindow: 200000,
-  },
-  'anthropic/claude-sonnet-4-20250514': {
-    input: 3.0,
-    output: 15.0,
-    contextWindow: 200000,
-  },
-  'openai/gpt-4o': {
-    input: 2.5,
-    output: 10.0,
-    contextWindow: 128000,
-  },
-  'openai/gpt-4o-mini': {
-    input: 0.15,
-    output: 0.6,
-    contextWindow: 128000,
-  },
-} satisfies Record<string, ModelPricing>
+// Use the centralized model pricing map
+export const MODEL_PRICING: Record<string, ModelPricing> = MODEL_PRICING_MAP
 
-// Default pricing fallback
-const DEFAULT_PRICING: ModelPricing = {
-  input: 3.0,
-  output: 15.0,
-  contextWindow: 200000,
-}
-
-// Utility to calculate cost from usage
+// Utility to calculate cost from usage (uses centralized registry)
 export function calculateCost(
   usage: { promptTokens: number; completionTokens: number },
   model: string
 ): number {
-  const pricing = MODEL_PRICING[model] ?? DEFAULT_PRICING
-  const inputCost = (usage.promptTokens / 1_000_000) * pricing.input
-  const outputCost = (usage.completionTokens / 1_000_000) * pricing.output
-  return inputCost + outputCost
+  return calculateModelCost(model, usage.promptTokens, usage.completionTokens)
 }
+
+// Re-export model utilities for convenience
+export { getModel, type ModelConfig }
 
 // Utility to generate unique IDs
 export function generateReasoningId(): string {

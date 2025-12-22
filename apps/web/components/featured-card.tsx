@@ -5,20 +5,20 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import type { Component } from '@/types'
+import type { RegistryItem } from '@/types'
 
 interface FeaturedCardProps {
-  component: Component
+  item: RegistryItem
   className?: string
   imageClassName?: string
   priority?: boolean
 }
 
-export function FeaturedCard({ component, className, imageClassName, priority = false }: FeaturedCardProps): React.ReactElement {
+export function FeaturedCard({ item, className, imageClassName, priority = false }: FeaturedCardProps): React.ReactElement {
   const [isLiked, setIsLiked] = useState(false)
 
   return (
-    <Link href={`/components/${component.slug}`} className={cn("block h-full", className)}>
+    <Link href={`/components/${item.name}`} className={cn("block h-full", className)}>
       <motion.div
         whileHover={{ y: -2 }}
         className="h-full bg-[#323333] rounded-xl border border-zinc-800 p-2.5 flex flex-col shadow-md"
@@ -27,7 +27,7 @@ export function FeaturedCard({ component, className, imageClassName, priority = 
         <div className={cn("relative w-full rounded-lg overflow-hidden mb-2 bg-zinc-800 shrink-0", imageClassName || "aspect-[16/10]")}>
           <img
             src={`https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop`}
-            alt={component.name}
+            alt={item.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
           />
         </div>
@@ -36,17 +36,17 @@ export function FeaturedCard({ component, className, imageClassName, priority = 
         <div className="flex flex-col flex-1 px-0.5">
           {/* Title and Subtitle */}
           <div className="mb-1.5">
-            <h2 className="text-base font-semibold text-white mb-0.5 leading-tight">{component.name}</h2>
-            <p className="text-zinc-400 text-xs capitalize">{component.category}</p>
+            <h2 className="text-base font-semibold text-white mb-0.5 leading-tight">{item.title}</h2>
+            <p className="text-zinc-400 text-xs capitalize">{item.categoryId}</p>
           </div>
 
           {/* Metrics Info */}
           <div className="flex items-center gap-3 mb-2">
             <div className="flex items-center gap-1 text-zinc-400">
               <Eye className="w-3 h-3" />
-              <span className="text-xs">{component.viewCount} views</span>
+              <span className="text-xs">{item.viewCount} views</span>
             </div>
-            {component.isPro && (
+            {item.isPro && (
               <div className="flex items-center gap-1 text-zinc-400">
                 <Tag className="w-3 h-3" />
                 <span className="text-xs font-bold text-white">PRO</span>
@@ -67,11 +67,10 @@ export function FeaturedCard({ component, className, imageClassName, priority = 
               className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-700 transition-all shrink-0"
             >
               <Heart
-                className={`w-3.5 h-3.5 transition-colors ${
-                  isLiked
+                className={`w-3.5 h-3.5 transition-colors ${isLiked
                     ? "text-red-500 fill-red-500"
                     : "text-zinc-400 hover:text-red-400"
-                }`}
+                  }`}
               />
             </button>
           </div>

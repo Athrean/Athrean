@@ -3,13 +3,18 @@
 import { useCallback } from 'react'
 import { useGenerateStore } from '@/stores/generate-store'
 import { extractCodeFromMarkdown } from '@/lib/utils'
-import { logGeneration, decrementCredits } from '@/lib/db/mutations'
+import { decrementCredits } from '@/lib/db/mutations'
 import { createClient } from '@/lib/supabase/client'
-import { saveComponent } from '@/app/actions/component'
+import { saveGeneration } from '@/app/actions/component'
 import type { ReasoningStep, ContextUsage } from '@/types/reasoning'
-import { calculateCost, MODEL_PRICING } from '@/types/reasoning'
+import { calculateCost } from '@/types/reasoning'
+import {
+  getModel,
+  DEFAULT_FREE_MODEL,
+} from '@/lib/models/registry'
 
-const DEFAULT_MODEL = 'anthropic/claude-3.5-sonnet'
+// Use free model by default for cost savings
+const DEFAULT_MODEL = DEFAULT_FREE_MODEL
 
 interface StreamChunk {
   type: 'content' | 'reasoning' | 'usage'
@@ -121,9 +126,8 @@ export function useGenerateWithReasoning(): UseGenerateWithReasoningReturn {
                 }
 
                 if (chunk.type === 'usage' && chunk.usage) {
-                  const defaultPricing = { input: 3.0, output: 15.0, contextWindow: 200000 }
-                  const pricing = MODEL_PRICING[model] ?? defaultPricing
-                  const contextWindow = pricing.contextWindow
+                  const modelConfig = getModel(model)
+                  const contextWindow = modelConfig?.contextWindow ?? 200000
                   const contextUsage: ContextUsage = {
                     promptTokens: chunk.usage.promptTokens,
                     completionTokens: chunk.usage.completionTokens,
@@ -168,23 +172,18 @@ export function useGenerateWithReasoning(): UseGenerateWithReasoningReturn {
 
         if (user && finalCode) {
           const durationMs = Date.now() - startTime
-          logGeneration({
-            prompt,
-            resultCode: finalCode,
-            model,
-            durationMs,
-          }).catch(() => { })
 
           decrementCredits().catch(() => { })
 
           // Auto-save project if not already saved
           if (!currentProjectId) {
             const projectTitle = prompt.slice(0, 50) || projectName
-            const result = await saveComponent({
+            const result = await saveGeneration({
               name: projectTitle,
               code: finalCode,
               prompt: prompt,
-              source: 'generated',
+              model,
+              durationMs,
               isPublic: false,
             })
 

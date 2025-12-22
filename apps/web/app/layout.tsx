@@ -19,11 +19,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="dark">
-      <body className="text-zinc-100 antialiased min-h-screen">
+      <body className="text-zinc-100 antialiased min-h-screen overflow-x-hidden">
         <BackgroundGradient />
-        <div className="flex min-h-screen relative p-4 gap-4">
+        <div className="flex min-h-screen relative p-4 gap-4 w-full min-w-0 overflow-x-hidden">
           <Sidebar userEmail={session?.user?.email} />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
         </div>
       </body>
     </html>

@@ -1,4 +1,5 @@
 import { streamCompletion } from '@/lib/openrouter'
+import { DEFAULT_FREE_MODEL } from '@/lib/models/registry'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -13,7 +14,9 @@ interface RequestBody {
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as RequestBody
-    const { prompt, baseCode, history = [], model } = body
+    const { prompt, baseCode, history = [], model: requestedModel } = body
+
+    const model = requestedModel ?? DEFAULT_FREE_MODEL
 
     const messages: { role: 'user' | 'assistant'; content: string }[] = []
 
@@ -32,7 +35,10 @@ export async function POST(request: Request) {
       async start(controller) {
         try {
           for await (const chunk of streamCompletion({ messages, model })) {
-            controller.enqueue(encoder.encode(chunk))
+            // Only pass content chunks as plain text for backward compatibility
+            if (chunk.type === 'content' && chunk.content) {
+              controller.enqueue(encoder.encode(chunk.content))
+            }
           }
           controller.close()
         } catch (error) {

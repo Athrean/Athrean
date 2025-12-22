@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { getComponents, getCategories, getPublicProjects, getUserSavedComponents } from '@/lib/db/queries'
+import { getRegistryItems, getCategories, getPublicGenerations, getUserFavorites } from '@/lib/db/queries'
 import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedSection } from '@/components/projects/featured-section'
 import { AllProjectsSection } from '@/components/projects/all-projects-section'
@@ -11,23 +11,22 @@ interface ProjectsPageProps {
 }
 
 async function ComponentsContent(): Promise<React.ReactElement> {
-  const [components, categories] = await Promise.all([
-    getComponents({ limit: 50 }),
+  const [items, categories] = await Promise.all([
+    getRegistryItems({ limit: 50 }),
     getCategories(),
   ])
 
-  // Group components by category
-  const componentsByCategory: Record<string, typeof components> = {}
-  for (const component of components) {
-    const cat = component.category || 'Uncategorized'
-    if (!componentsByCategory[cat]) {
-      componentsByCategory[cat] = []
+  // Group items by category
+  const itemsByCategory: Record<string, typeof items> = {}
+  for (const item of items) {
+    const cat = item.categoryId || 'Uncategorized'
+    if (!itemsByCategory[cat]) {
+      itemsByCategory[cat] = []
     }
-    componentsByCategory[cat].push(component)
+    itemsByCategory[cat].push(item)
   }
 
-  // Reuse FeaturedSection for components grid display as it handles categorization well
-  return <FeaturedSection componentsByCategory={componentsByCategory} categories={categories} />
+  return <FeaturedSection itemsByCategory={itemsByCategory} categories={categories.map(c => c.id)} />
 }
 
 async function FavoritesContent(): Promise<React.ReactElement> {
@@ -42,9 +41,9 @@ async function FavoritesContent(): Promise<React.ReactElement> {
     )
   }
 
-  const projects = await getUserSavedComponents(user.id)
+  const favoriteItems = await getUserFavorites(user.id)
 
-  if (projects.length === 0) {
+  if (favoriteItems.length === 0) {
     return (
       <div className="py-12 text-center">
         <p className="text-zinc-400">You haven't starred any components yet.</p>
@@ -52,11 +51,26 @@ async function FavoritesContent(): Promise<React.ReactElement> {
     )
   }
 
-  return <AllProjectsSection projects={projects} />
+  // Convert RegistryItem[] to UserGeneration[] format for AllProjectsSection
+  // Note: This is a workaround - in a full implementation you might want a separate component
+  const projectsLike = favoriteItems.map(item => ({
+    id: item.id,
+    userId: user.id,
+    name: item.title,
+    prompt: item.description || '',
+    code: item.files[0]?.content || '',
+    model: null,
+    durationMs: null,
+    isPublic: true,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  }))
+
+  return <AllProjectsSection projects={projectsLike} />
 }
 
 async function AllProjectsContent(): Promise<React.ReactElement> {
-  const projects = await getPublicProjects({ limit: 50 })
+  const projects = await getPublicGenerations(50)
   return <AllProjectsSection projects={projects} />
 }
 
@@ -81,7 +95,7 @@ function GridSkeleton(): React.ReactElement {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pt-6">
       {Array.from({ length: 8 }).map((_, i) => (
-        <Skeleton key={i} className="aspect-[4/3] rounded-2xl" />
+        <Skeleton key={i} className="aspect-4/3 rounded-2xl" />
       ))}
     </div>
   )

@@ -9,11 +9,11 @@ import { cn } from '@/lib/utils'
 import { ProjectPreviewCard } from '@/components/home/project-preview-card'
 import { ProjectCarousel } from '@/components/home/project-carousel'
 import { EmptyState } from '@/components/home/empty-state'
-import type { UserComponent } from '@/types'
+import type { UserGeneration } from '@/types'
 
 interface ProjectsCardProps {
-  recentProjects: UserComponent[]
-  myProjects: UserComponent[]
+  recentProjects: UserGeneration[]
+  myProjects: UserGeneration[]
   isAuthenticated: boolean
 }
 

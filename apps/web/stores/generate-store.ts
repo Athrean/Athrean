@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type {
   ChatMessage,
   GenerateStore,
-  Component,
+  RegistryItem,
   ReasoningStep,
   ContextUsage,
   Checkpoint,
@@ -31,7 +31,7 @@ export const useGenerateStore = create<GenerateStore>((set, get) => ({
     set({ pendingPrompt: prompt })
   },
 
-  setBaseComponent: (component: Pick<Component, 'id' | 'name' | 'code'> | null): void => {
+  setBaseComponent: (component: Pick<RegistryItem, 'id' | 'name' | 'title'> & { code: string } | null): void => {
     set({ baseComponent: component })
   },
 
@@ -81,6 +81,23 @@ export const useGenerateStore = create<GenerateStore>((set, get) => ({
 
   setProjectName: (name: string): void => {
     set({ projectName: name })
+  },
+
+  loadProject: (project: { id: string; name: string; code: string; prompt: string }): void => {
+    const timestamp = Date.now()
+    set({
+      currentProjectId: project.id,
+      projectName: project.name,
+      generatedCode: project.code,
+      messages: [
+        { role: 'user', content: project.prompt, timestamp },
+        { role: 'assistant', content: `\`\`\`tsx\n${project.code}\n\`\`\``, timestamp: timestamp + 1 },
+      ],
+      // Clear reasoning/checkpoints for loaded projects
+      currentReasoning: [],
+      currentContextUsage: null,
+      checkpoints: [],
+    })
   },
 
   // Reasoning actions

@@ -4,10 +4,10 @@ import Link from 'next/link'
 import { Sparkles, Clock, Pencil } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getProjectTimeLabel } from '@/lib/format-time'
-import type { UserComponent } from '@/types'
+import type { UserGeneration } from '@/types'
 
 interface ProjectPreviewCardProps {
-    project: UserComponent
+    project: UserGeneration
     variant?: 'grid' | 'carousel'
     showTimestamp?: boolean
 }

@@ -3,6 +3,7 @@
 import { useRef, useState, type ChangeEvent, type KeyboardEvent, type FormEvent } from 'react'
 import { ArrowUp, Paperclip, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ContextUsageIndicator } from '../context-usage'
 import type { ContextUsage } from '@/types/reasoning'
 
 interface ChatInputProps {
@@ -32,6 +33,7 @@ function ToolbarButton({
 export function ChatInput({
   onSubmit,
   isGenerating,
+  contextUsage,
 }: ChatInputProps): React.ReactElement {
   const [input, setInput] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -90,7 +92,7 @@ export function ChatInput({
           />
         </div>
 
-        {/* Toolbar - simplified: just Add, Attach, Send */}
+        {/* Toolbar - Add, Attach, Context Usage, Send */}
         <div className="flex items-center justify-between px-3 pb-3">
           {/* Left toolbar */}
           <div className="flex items-center gap-0.5">
@@ -104,19 +106,24 @@ export function ChatInput({
             </ToolbarButton>
           </div>
 
-          {/* Right - just send */}
-          <button
-            type="submit"
-            disabled={!input.trim() || isGenerating}
-            className={cn(
-              "flex items-center justify-center w-8 h-8 rounded-full transition-all",
-              input.trim() && !isGenerating
-                ? "bg-zinc-100 text-zinc-900 hover:bg-white"
-                : "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+          {/* Right - Context usage + send */}
+          <div className="flex items-center gap-2">
+            {contextUsage && (
+              <ContextUsageIndicator usage={contextUsage} />
             )}
-          >
-            <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
-          </button>
+            <button
+              type="submit"
+              disabled={!input.trim() || isGenerating}
+              className={cn(
+                "flex items-center justify-center w-8 h-8 rounded-full transition-all",
+                input.trim() && !isGenerating
+                  ? "bg-zinc-100 text-zinc-900 hover:bg-white"
+                  : "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+              )}
+            >
+              <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
       </form>
       <p className="text-[10px] text-zinc-600 text-center mt-3">
@@ -125,3 +132,4 @@ export function ChatInput({
     </div>
   )
 }
+

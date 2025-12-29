@@ -16,7 +16,7 @@ export default function Flow02() {
             />
 
             {/* Bottom Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
             {/* Heart Icon */}
             <button

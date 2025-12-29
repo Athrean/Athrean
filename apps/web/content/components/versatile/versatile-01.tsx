@@ -103,6 +103,8 @@ export default function Versatile01() {
 
   const activeTestimonial = testimonials[activeIndex];
 
+  if (!activeTestimonial) return null;
+
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-zinc-950 p-4 font-sans">
       <div className="mx-auto max-w-4xl">

@@ -296,12 +296,13 @@ export abstract class BaseGenerator {
         tools: this.config.tools,
       })
     } else {
-      yield* streamCompletion({
+      for await (const content of streamCompletion({
         messages,
         model,
-        systemPrompt: this.config.systemPrompt,
         tools: this.config.tools,
-      })
+      })) {
+        yield { type: 'content', content } as StreamChunk
+      }
     }
   }
 }

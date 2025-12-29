@@ -107,7 +107,7 @@ function transformCategory(row: {
   }
 }
 
-function transformRegistryItem(row: {
+interface RegistryItemRow {
   id: string
   name: string
   type: string
@@ -127,7 +127,9 @@ function transformRegistryItem(row: {
   view_count: number
   created_at: string
   updated_at: string
-}): RegistryItem {
+}
+
+function transformRegistryItem(row: RegistryItemRow): RegistryItem {
   return {
     id: row.id,
     name: row.name,
@@ -395,8 +397,8 @@ export async function getUserFavorites(userId: string): Promise<RegistryItem[]> 
   }
 
   return data
-    .filter((row) => row.registry_items)
-    .map((row) => transformRegistryItem(row.registry_items as any))
+    .filter((row) => row.registry_items !== null)
+    .map((row) => transformRegistryItem(row.registry_items as unknown as RegistryItemRow))
 }
 
 export async function isItemFavorited(userId: string, itemId: string): Promise<boolean> {

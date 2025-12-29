@@ -35,9 +35,9 @@ export async function POST(request: Request) {
       async start(controller) {
         try {
           for await (const chunk of streamCompletion({ messages, model })) {
-            // Only pass content chunks as plain text for backward compatibility
-            if (chunk.type === 'content' && chunk.content) {
-              controller.enqueue(encoder.encode(chunk.content))
+            // streamCompletion yields plain strings
+            if (chunk) {
+              controller.enqueue(encoder.encode(chunk))
             }
           }
           controller.close()

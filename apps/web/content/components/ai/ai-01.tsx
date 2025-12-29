@@ -53,10 +53,10 @@ export default function Ai01() {
     setIsExpanded(e.target.value.length > 100 || e.target.value.includes("\n"));
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e as any);
+      e.currentTarget.form?.requestSubmit();
     }
   };
 
@@ -72,7 +72,7 @@ export default function Ai01() {
           type="file"
           multiple
           className="sr-only"
-          onChange={(e) => { }}
+          onChange={() => { }}
         />
 
         <div

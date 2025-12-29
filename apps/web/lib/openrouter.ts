@@ -1,12 +1,26 @@
-interface Message {
+export interface Message {
   role: 'system' | 'user' | 'assistant'
   content: string
+}
+
+export interface Tool {
+  type: 'function'
+  function: {
+    name: string
+    description: string
+    parameters: {
+      type: string
+      properties: Record<string, unknown>
+      required?: string[]
+    }
+  }
 }
 
 interface StreamCompletionOptions {
   messages: Message[]
   model?: string
   includeReasoning?: boolean
+  tools?: Tool[]
 }
 
 export interface StreamChunk {

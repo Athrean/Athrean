@@ -7,14 +7,15 @@ interface ComponentPreviewProps {
   code: string;
   name?: string;
   dependencies?: Record<string, string>;
+  theme?: 'light' | 'dark';
 }
 
-export function ComponentPreview({ name }: ComponentPreviewProps): React.ReactElement {
+export function ComponentPreview({ name, theme = 'light' }: ComponentPreviewProps): React.ReactElement {
   const [isLoading, setIsLoading] = useState(true);
   const [key, setKey] = useState(0);
 
-  // Use blocks.so iframe for preview - this gives exact same rendering as blocks.so
-  const previewUrl = name ? `https://blocks.so/blocks/preview/${name}` : null;
+  // Use local preview route with theme parameter
+  const previewUrl = name ? `/legos/preview/${name}?theme=${theme}` : null;
 
   const handleRefresh = () => {
     setIsLoading(true);
@@ -29,18 +30,21 @@ export function ComponentPreview({ name }: ComponentPreviewProps): React.ReactEl
     );
   }
 
+  const bgColor = theme === 'dark' ? 'bg-zinc-900' : 'bg-white';
+  const loaderBg = theme === 'dark' ? 'bg-zinc-900' : 'bg-white';
+
   return (
-    <div className="h-full w-full relative bg-white">
+    <div className={`h-full w-full relative ${bgColor}`}>
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
+        <div className={`absolute inset-0 flex items-center justify-center ${loaderBg} z-10`}>
           <Loader2 className="w-6 h-6 text-zinc-400 animate-spin" />
         </div>
       )}
 
       <iframe
-        key={key}
+        key={`${key}-${theme}`}
         src={previewUrl}
-        className="w-full h-full border-0 bg-white"
+        className={`w-full h-full border-0 ${bgColor}`}
         onLoad={() => setIsLoading(false)}
         title={`Preview of ${name}`}
         sandbox="allow-scripts allow-same-origin"

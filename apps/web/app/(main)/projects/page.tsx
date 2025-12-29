@@ -123,42 +123,46 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps):
   }
 
   return (
-    <div className="min-h-[calc(100vh-32px)]">
-      <div className="bg-[#323333] rounded-2xl px-6 sm:px-8 py-10 space-y-6 h-full">
-        {/* Header */}
-        <div>
-          <p className="text-xs uppercase tracking-[0.24em] text-zinc-500 mb-2">
-            {subtitle}
-          </p>
-          <h1 className="text-3xl md:text-4xl font-semibold text-white">
-            {title}
-          </h1>
-          <p className="text-zinc-400 mt-2 max-w-2xl">
-            {description}
-          </p>
+    <div className="h-[calc(100vh-32px)] flex flex-col">
+      <div className="bg-[#323333] rounded-2xl flex flex-col h-full overflow-hidden">
+        {/* Header - Fixed */}
+        <div className="px-6 sm:px-8 pt-10 pb-6 shrink-0 space-y-6">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-zinc-500 mb-2">
+              {subtitle}
+            </p>
+            <h1 className="text-3xl md:text-4xl font-semibold text-white">
+              {title}
+            </h1>
+            <p className="text-zinc-400 mt-2 max-w-2xl">
+              {description}
+            </p>
+          </div>
+
+          {/* Tabs */}
+          <ProjectsTabs activeTab={activeTab} />
         </div>
 
-        {/* Tabs */}
-        <ProjectsTabs activeTab={activeTab} />
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto px-6 sm:px-8 pb-10">
+          {activeTab === 'components' && (
+            <Suspense fallback={<ComponentsSkeleton />}>
+              <ComponentsContent />
+            </Suspense>
+          )}
 
-        {/* Content */}
-        {activeTab === 'components' && (
-          <Suspense fallback={<ComponentsSkeleton />}>
-            <ComponentsContent />
-          </Suspense>
-        )}
+          {activeTab === 'featured' && (
+            <Suspense fallback={<GridSkeleton />}>
+              <FavoritesContent />
+            </Suspense>
+          )}
 
-        {activeTab === 'featured' && (
-          <Suspense fallback={<GridSkeleton />}>
-            <FavoritesContent />
-          </Suspense>
-        )}
-
-        {activeTab === 'all' && (
-          <Suspense fallback={<GridSkeleton />}>
-            <AllProjectsContent />
-          </Suspense>
-        )}
+          {activeTab === 'all' && (
+            <Suspense fallback={<GridSkeleton />}>
+              <AllProjectsContent />
+            </Suspense>
+          )}
+        </div>
       </div>
     </div>
   )

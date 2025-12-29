@@ -48,18 +48,18 @@ export default async function ComponentsPage({ searchParams }: PageProps): Promi
     const params = await searchParams
 
     return (
-        <div className="min-h-[calc(100vh-32px)]">
-            <div className="bg-[#323333] rounded-2xl px-6 sm:px-8 lg:px-10 py-10 h-full">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-white mb-2">Components</h1>
-                    <p className="text-zinc-400">
-                        Browse our collection of beautiful, animated React components.
-                    </p>
-                </div>
+        <div className="h-[calc(100vh-32px)] flex flex-col">
+            <div className="bg-[#323333] rounded-2xl flex flex-col h-full overflow-hidden">
+                {/* Header - Fixed */}
+                <div className="px-6 sm:px-8 lg:px-10 pt-10 pb-6 shrink-0">
+                    <div className="mb-6">
+                        <h1 className="text-3xl font-bold text-white mb-2">Components</h1>
+                        <p className="text-zinc-400">
+                            Browse our collection of beautiful, animated React components.
+                        </p>
+                    </div>
 
-                {/* Search */}
-                <div className="mb-12">
+                    {/* Search */}
                     <form className="max-w-md relative flex items-center">
                         <div className="relative w-full shadow-[0_4px_20px_-2px_rgba(0,0,0,0.5)] rounded-full">
                             <input
@@ -79,10 +79,12 @@ export default async function ComponentsPage({ searchParams }: PageProps): Promi
                     </form>
                 </div>
 
-                {/* Content */}
-                <Suspense fallback={<ComponentsSkeleton />}>
-                    <ComponentsContent searchParams={params} />
-                </Suspense>
+                {/* Content - Scrollable */}
+                <div className="flex-1 overflow-y-auto px-6 sm:px-8 lg:px-10 pb-10">
+                    <Suspense fallback={<ComponentsSkeleton />}>
+                        <ComponentsContent searchParams={params} />
+                    </Suspense>
+                </div>
             </div>
         </div>
     )

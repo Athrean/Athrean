@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "flow-02",
+  "type": "registry:block",
+  "title": "Flight Card Overlay",
+  "description": "Stunning flight card with full-bleed background and glassmorphism effects",
+  "author": "athrean <https://athrean.com>",
+  "registryDependencies": [],
+  "dependencies": [
+    "lucide-react"
+  ],
+  "files": [
+    {
+      "path": "content/components/flow/flow-02.tsx",
+      "content": "\"use client\";\n\nimport { Heart, Tag, Plane } from \"lucide-react\";\nimport { useState } from \"react\";\n\nexport default function Flow02() {\n    const [isLiked, setIsLiked] = useState(false);\n\n    return (\n        <div className=\"flex min-h-screen items-center justify-center bg-gray-50 p-8\">\n            <div className=\"relative h-[550px] w-[390px] overflow-hidden rounded-[2.5rem] bg-white shadow-2xl\">\n                {/* Background Image */}\n                <img\n                    src=\"https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop\"\n                    alt=\"New York City\"\n                    className=\"absolute inset-0 h-full w-full object-cover\"\n                />\n\n                {/* Bottom Gradient Overlay with Fading Blur */}\n                <div className=\"absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent\" />\n                <div\n                    className=\"absolute bottom-0 left-0 right-0 h-[350px] bg-gradient-to-t from-black/40 via-transparent to-transparent backdrop-blur-sm\"\n                    style={{\n                        maskImage:\n                            \"linear-gradient(to top, black 0%, black 40%, transparent 100%)\",\n                        WebkitMaskImage:\n                            \"linear-gradient(to top, black 0%, black 40%, transparent 100%)\",\n                    }}\n                />\n\n                {/* Heart Icon */}\n                <button\n                    onClick={() => setIsLiked(!isLiked)}\n                    className=\"absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/20 backdrop-blur-md transition-all hover:bg-white/30\"\n                >\n                    <Heart\n                        className={`h-5 w-5 transition-colors ${isLiked ? \"fill-red-500 text-red-500\" : \"text-white\"\n                            }`}\n                    />\n                </button>\n\n                {/* Content */}\n                <div className=\"absolute bottom-0 left-0 right-0 z-10 p-6\">\n                    {/* Title and Subtitle */}\n                    <div className=\"mb-4\">\n                        <h2 className=\"mb-0.5 text-[2.5rem] font-bold leading-none text-white\">\n                            New York\n                        </h2>\n                        <p className=\"text-base text-white/70\">Economy</p>\n                    </div>\n\n                    {/* Price and Airport Info */}\n                    <div className=\"mb-5 flex items-center gap-6\">\n                        <div className=\"flex items-center gap-2 text-white\">\n                            <Tag className=\"h-[18px] w-[18px] text-white/80\" />\n                            <span className=\"text-base font-normal\">\n                                from <span className=\"font-bold\">$120</span>\n                            </span>\n                        </div>\n                        <div className=\"flex items-center gap-2 text-white\">\n                            <Plane className=\"h-[18px] w-[18px] text-white/80\" />\n                            <span className=\"text-base font-semibold\">JFK</span>\n                        </div>\n                    </div>\n\n                    {/* CTA Button */}\n                    <button className=\"w-full rounded-full bg-white py-[15px] text-base font-semibold text-gray-900 transition-all hover:bg-gray-100\">\n                        Search flight\n                    </button>\n                </div>\n            </div>\n        </div>\n    );\n}\n",
+      "type": "registry:block",
+      "target": "components/legos/flow-02.tsx"
+    }
+  ],
+  "categories": [
+    "flow"
+  ]
+}

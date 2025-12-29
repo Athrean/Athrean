@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Copy, Monitor, Tablet, Smartphone, Maximize2, Pencil, ExternalLink } from 'lucide-react'
+import { Check, Copy, Monitor, Tablet, Smartphone, Maximize2, Pencil, ExternalLink, Sun, Moon } from 'lucide-react'
 import { ComponentPreview } from './component-preview'
 import { CodeBlock } from '@/components/code-block'
 import { trackInstall } from '@/lib/db/mutations'
@@ -14,6 +14,7 @@ interface LegoDetailViewProps {
 
 type ViewMode = 'preview' | 'code'
 type DeviceFrame = 'desktop' | 'tablet' | 'mobile'
+type PreviewTheme = 'light' | 'dark'
 
 const deviceWidths: Record<DeviceFrame, string> = {
   desktop: '100%',
@@ -25,6 +26,7 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
   const [viewMode, setViewMode] = useState<ViewMode>('preview')
   const [deviceFrame, setDeviceFrame] = useState<DeviceFrame>('desktop')
   const [commandCopied, setCommandCopied] = useState(false)
+  const [previewTheme, setPreviewTheme] = useState<PreviewTheme>('light')
 
   const registryCommand = `npx shadcn@latest add https://athrean.com/r/${item.name}.json`
 
@@ -110,6 +112,29 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
                       <Smartphone className="w-3.5 h-3.5" />
                     </button>
                   </div>
+                  {/* Theme Toggle */}
+                  <div className="flex items-center bg-[#323333] rounded-md p-0.5 border border-zinc-800">
+                    <button
+                      onClick={() => setPreviewTheme('light')}
+                      className={`p-1 rounded transition-colors ${previewTheme === 'light'
+                        ? 'bg-zinc-800 text-white shadow-sm'
+                        : 'text-zinc-400 hover:text-zinc-200'
+                        }`}
+                      title="Light Mode"
+                    >
+                      <Sun className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setPreviewTheme('dark')}
+                      className={`p-1 rounded transition-colors ${previewTheme === 'dark'
+                        ? 'bg-zinc-800 text-white shadow-sm'
+                        : 'text-zinc-400 hover:text-zinc-200'
+                        }`}
+                      title="Dark Mode"
+                    >
+                      <Moon className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                   <div className="w-px h-3 bg-zinc-800" />
                 </>
               )}
@@ -145,7 +170,7 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
               <>
                 {deviceFrame === 'desktop' && (
                   <div className="w-full h-full">
-                    <ComponentPreview code={code} name={item.name} dependencies={item.dependencies} />
+                    <ComponentPreview code={code} name={item.name} dependencies={item.dependencies} theme={previewTheme} />
                   </div>
                 )}
 
@@ -154,7 +179,7 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
                     <div className="relative border-14 border-zinc-900 rounded-[32px] overflow-hidden bg-zinc-950 shadow-2xl h-[600px] w-[768px] max-w-full shrink-0">
                       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-1 bg-zinc-800 rounded-full mt-1.5 z-20" />
                       <div className="h-full w-full bg-white dark:bg-zinc-950">
-                        <ComponentPreview code={code} name={item.name} dependencies={item.dependencies} />
+                        <ComponentPreview code={code} name={item.name} dependencies={item.dependencies} theme={previewTheme} />
                       </div>
                     </div>
                   </div>
@@ -168,7 +193,7 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
                         <div className="w-20 h-[6px] bg-black rounded-full mt-2" />
                       </div>
                       <div className="h-full w-full bg-white dark:bg-zinc-950 overflow-hidden rounded-[34px]">
-                        <ComponentPreview code={code} name={item.name} dependencies={item.dependencies} />
+                        <ComponentPreview code={code} name={item.name} dependencies={item.dependencies} theme={previewTheme} />
                       </div>
                       {/* Home indicator */}
                       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-zinc-100/20 rounded-full z-20" />

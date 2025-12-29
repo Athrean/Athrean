@@ -19,6 +19,9 @@ export type LegosMetadata = {
 
 export const categoryIds = {
   AI: "ai",
+  Flow: "flow",
+  Grids: "grids",
+  Versatile: "versatile",
   // Future categories (uncomment as needed):
   // FileUpload: "file-upload",
   // FormLayout: "form-layout",
@@ -37,7 +40,25 @@ export const categoryMetadata: LegosCategoryMetadata[] = [
     id: categoryIds.AI,
     name: "AI",
     description: "AI chat interfaces, prompts, and assistants",
-    count: "4",
+    count: "5",
+  },
+  {
+    id: categoryIds.Flow,
+    name: "Flow",
+    description: "Beautiful card components for travel, booking, and more",
+    count: "2",
+  },
+  {
+    id: categoryIds.Grids,
+    name: "Grids",
+    description: "Bento grids and dashboard layouts with stunning designs",
+    count: "5",
+  },
+  {
+    id: categoryIds.Versatile,
+    name: "Versatile",
+    description: "Animated testimonials, card stacks, and multipurpose sections",
+    count: "2",
   },
   // Future categories (uncomment as needed):
   // {
@@ -47,3 +68,4 @@ export const categoryMetadata: LegosCategoryMetadata[] = [
   //   count: "0",
   // },
 ];
+

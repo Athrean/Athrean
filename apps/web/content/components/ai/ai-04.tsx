@@ -144,16 +144,16 @@ export default function Ai04({
 
   return (
     <div className="mx-auto flex w-full flex-col gap-4">
-      <h1 className="text-pretty text-center font-semibold text-[29px] text-foreground tracking-tighter sm:text-[32px] md:text-[46px]">
+      <h1 className="text-pretty text-center font-semibold text-[29px] text-gray-900 tracking-tighter sm:text-[32px] md:text-[46px]">
         Prompt. Refine. Ship.
       </h1>
-      <h2 className="-my-5 pb-4 text-center text-xl text-muted-foreground">
+      <h2 className="-my-5 pb-4 text-center text-xl text-gray-500">
         Build real, working software just by describing it
       </h2>
 
       <div className="relative z-10 flex flex-col w-full mx-auto max-w-2xl content-center">
         <form
-          className="overflow-visible rounded-xl border p-2 transition-colors duration-200 focus-within:border-ring"
+          className="overflow-visible rounded-xl border border-gray-200 bg-white p-2 transition-colors duration-200 focus-within:border-violet-400"
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
@@ -164,7 +164,7 @@ export default function Ai04({
               {attachedFiles.map((file) => (
                 <Badge
                   variant="outline"
-                  className="group relative h-6 max-w-30 cursor-pointer overflow-hidden text-[13px] transition-colors hover:bg-accent px-0"
+                  className="group relative h-6 max-w-30 cursor-pointer overflow-hidden text-[13px] transition-colors hover:bg-gray-100 px-0 border-gray-200 text-gray-700"
                   key={file.id}
                 >
                   <span className="flex h-full items-center gap-1.5 overflow-hidden pl-1 font-normal">
@@ -186,7 +186,7 @@ export default function Ai04({
                     </span>
                   </span>
                   <button
-                    className="absolute right-1 z-10 rounded-sm p-0.5 text-muted-foreground opacity-0 focus-visible:bg-accent focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background group-hover:opacity-100"
+                    className="absolute right-1 z-10 rounded-sm p-0.5 text-gray-500 opacity-0 focus-visible:bg-gray-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-violet-400 group-hover:opacity-100"
                     onClick={() => handleRemoveFile(file.id)}
                     type="button"
                   >
@@ -197,7 +197,7 @@ export default function Ai04({
             </div>
           )}
           <Textarea
-            className="max-h-50 min-h-12 resize-none rounded-none border-none bg-transparent! p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
+            className="max-h-50 min-h-12 resize-none rounded-none border-none bg-white p-0 text-sm text-gray-900 placeholder:text-gray-400 shadow-none focus-visible:border-transparent focus-visible:ring-0"
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder="Ask anything"
@@ -217,7 +217,7 @@ export default function Ai04({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    className="ml-[-2px] h-7 w-7 rounded-md"
+                    className="ml-[-2px] h-7 w-7 rounded-md text-gray-600 hover:bg-gray-100"
                     size="icon"
                     type="button"
                     variant="ghost"
@@ -227,33 +227,33 @@ export default function Ai04({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="max-w-xs rounded-2xl p-1.5"
+                  className="max-w-xs rounded-2xl p-1.5 bg-white"
                 >
                   <DropdownMenuGroup className="space-y-1">
                     <DropdownMenuItem
-                      className="rounded-[calc(1rem-6px)] text-xs"
+                      className="rounded-[calc(1rem-6px)] text-xs text-gray-700"
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <div className="flex items-center gap-2">
-                        <Paperclip className="text-muted-foreground" size={16} />
+                        <Paperclip className="text-gray-500" size={16} />
                         <span>Attach Files</span>
                       </div>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
+                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs text-gray-700">
                       <div className="flex items-center gap-2">
-                        <Link className="text-muted-foreground" size={16} />
+                        <Link className="text-gray-500" size={16} />
                         <span>Import from URL</span>
                       </div>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
+                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs text-gray-700">
                       <div className="flex items-center gap-2">
-                        <Clipboard className="text-muted-foreground" size={16} />
+                        <Clipboard className="text-gray-500" size={16} />
                         <span>Paste from Clipboard</span>
                       </div>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
+                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs text-gray-700">
                       <div className="flex items-center gap-2">
-                        <LayoutTemplate className="text-muted-foreground" size={16} />
+                        <LayoutTemplate className="text-gray-500" size={16} />
                         <span>Use Template</span>
                       </div>
                     </DropdownMenuItem>
@@ -264,7 +264,7 @@ export default function Ai04({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    className="size-7 rounded-md"
+                    className="size-7 rounded-md text-gray-600 hover:bg-gray-100"
                     size="icon"
                     type="button"
                     variant="ghost"
@@ -274,13 +274,13 @@ export default function Ai04({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="w-48 rounded-2xl p-3"
+                  className="w-48 rounded-2xl p-3 bg-white"
                 >
                   <DropdownMenuGroup className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Sparkles className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Auto-complete</Label>
+                        <Sparkles className="text-gray-500" size={16} />
+                        <Label className="text-xs text-gray-700">Auto-complete</Label>
                       </div>
                       <Switch
                         checked={settings.autoComplete}
@@ -293,8 +293,8 @@ export default function Ai04({
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Play className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Streaming</Label>
+                        <Play className="text-gray-500" size={16} />
+                        <Label className="text-xs text-gray-700">Streaming</Label>
                       </div>
                       <Switch
                         checked={settings.streaming}
@@ -307,8 +307,8 @@ export default function Ai04({
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <History className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Show History</Label>
+                        <History className="text-gray-500" size={16} />
+                        <Label className="text-xs text-gray-700">Show History</Label>
                       </div>
                       <Switch
                         checked={settings.showHistory}
@@ -325,7 +325,7 @@ export default function Ai04({
 
             <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
               <Button
-                className="h-7 w-7 rounded-md"
+                className="h-7 w-7 rounded-md bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50"
                 disabled={!prompt.trim()}
                 size="icon"
                 type="submit"
@@ -338,7 +338,7 @@ export default function Ai04({
 
           <div
             className={cn(
-              "absolute inset-0 flex items-center justify-center pointer-events-none z-20 rounded-[inherit] border border-border border-dashed bg-muted text-foreground text-sm transition-opacity duration-200",
+              "absolute inset-0 flex items-center justify-center pointer-events-none z-20 rounded-[inherit] border border-gray-300 border-dashed bg-gray-100 text-gray-700 text-sm transition-opacity duration-200",
               isDragOver ? "opacity-100" : "opacity-0"
             )}
           >
@@ -353,7 +353,7 @@ export default function Ai04({
       <div className="max-w-250 mx-auto flex-wrap gap-3 flex min-h-0 shrink-0 items-center justify-center">
         {ACTIONS.map((action) => (
           <Button
-            className="gap-2 rounded-full"
+            className="gap-2 rounded-full border-gray-200 text-gray-700 bg-white hover:bg-gray-100"
             key={action.id}
             size="sm"
             variant="outline"

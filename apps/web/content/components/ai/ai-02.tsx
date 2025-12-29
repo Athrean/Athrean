@@ -86,7 +86,7 @@ export default function Ai02() {
   };
 
   const renderMaxBadge = () => (
-    <div className="flex h-[14px] items-center gap-1.5 rounded border border-border px-1 py-0">
+    <div className="flex h-[14px] items-center gap-1.5 rounded border border-gray-300 px-1 py-0">
       <span
         className="text-[9px] font-bold uppercase"
         style={{
@@ -103,20 +103,20 @@ export default function Ai02() {
 
   return (
     <div className="flex flex-col gap-4 w-[calc(42rem-5rem)]">
-      <div className="flex min-h-[120px] flex-col rounded-2xl cursor-text bg-card border border-border shadow-lg">
+      <div className="flex min-h-[120px] flex-col rounded-2xl cursor-text bg-white border border-gray-200 shadow-lg">
         <div className="flex-1 relative overflow-y-auto max-h-[258px]">
           <Textarea
             ref={inputRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Ask anything"
-            className="w-full border-0 p-3 transition-[padding] duration-200 ease-in-out min-h-[48.4px] outline-none text-[16px] text-foreground resize-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent! whitespace-pre-wrap break-words"
+            className="w-full border-0 p-3 transition-[padding] duration-200 ease-in-out min-h-[48.4px] outline-none text-[16px] text-gray-900 resize-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-white placeholder:text-gray-400 whitespace-pre-wrap break-words"
           />
         </div>
 
         <div className="flex min-h-[40px] items-center gap-2 p-2 pb-1">
-          <div className="flex aspect-1 items-center gap-1 rounded-full bg-muted p-1.5 text-xs">
-            <Cloud className="h-4 w-4 text-muted-foreground" />
+          <div className="flex aspect-1 items-center gap-1 rounded-full bg-gray-100 p-1.5 text-xs">
+            <Cloud className="h-4 w-4 text-gray-500" />
           </div>
 
           <div className="relative flex items-center">
@@ -124,30 +124,30 @@ export default function Ai02() {
               value={selectedModel.value}
               onValueChange={handleModelChange}
             >
-              <SelectTrigger className="w-fit border-none bg-transparent! p-0 text-sm text-muted-foreground hover:text-foreground focus:ring-0 shadow-none">
+              <SelectTrigger className="w-fit border-none bg-transparent p-0 text-sm text-gray-500 hover:text-gray-900 focus:ring-0 shadow-none">
                 <SelectValue>
                   {selectedModel.max ? (
                     <div className="flex items-center gap-1">
-                      <span>{selectedModel.name}</span>
+                      <span className="text-gray-700">{selectedModel.name}</span>
                       {renderMaxBadge()}
                     </div>
                   ) : (
-                    <span>{selectedModel.name}</span>
+                    <span className="text-gray-700">{selectedModel.name}</span>
                   )}
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {MODELS.map((model) => (
                   <SelectItem key={model.value} value={model.value}>
                     {model.max ? (
                       <div className="flex items-center gap-1">
-                        <span>{model.name}</span>
+                        <span className="text-gray-900">{model.name}</span>
                         {renderMaxBadge()}
                       </div>
                     ) : (
-                      <span>{model.name}</span>
+                      <span className="text-gray-900">{model.name}</span>
                     )}
-                    <span className="text-muted-foreground block text-xs">
+                    <span className="text-gray-500 block text-xs">
                       {model.description}
                     </span>
                   </SelectItem>
@@ -160,7 +160,7 @@ export default function Ai02() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-muted-foreground hover:text-foreground transition-all duration-100"
+              className="h-6 w-6 text-gray-500 hover:text-gray-900 transition-all duration-100"
               title="Attach images"
             >
               <ScanEye className="h-5 w-5" />
@@ -170,12 +170,12 @@ export default function Ai02() {
               variant="ghost"
               size="icon"
               className={cn(
-                "h-6 w-6 rounded-full transition-all duration-100 cursor-pointer bg-primary",
-                inputValue && "bg-primary hover:bg-primary/90!"
+                "h-6 w-6 rounded-full transition-all duration-100 cursor-pointer bg-gray-900",
+                inputValue && "bg-gray-900 hover:bg-gray-800"
               )}
               disabled={!inputValue}
             >
-              <ArrowUp className="h-4 w-4 text-primary-foreground" />
+              <ArrowUp className="h-4 w-4 text-white" />
             </Button>
           </div>
         </div>
@@ -188,10 +188,10 @@ export default function Ai02() {
             <Button
               key={button.text}
               variant="ghost"
-              className="group flex items-center gap-2 rounded-full border px-3 py-2 text-sm text-foreground transition-all duration-200 hover:bg-muted/30 h-auto bg-transparent dark:bg-muted"
+              className="group flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-gray-100 h-auto bg-white"
               onClick={() => handlePromptClick(button.prompt)}
             >
-              <IconComponent className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+              <IconComponent className="h-4 w-4 text-gray-500 transition-colors group-hover:text-gray-700" />
               <span>{button.text}</span>
             </Button>
           );

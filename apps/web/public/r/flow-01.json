@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "flow-01",
+  "type": "registry:block",
+  "title": "Flight Card White",
+  "description": "Clean white flight card with image, pricing, and like button",
+  "author": "athrean <https://athrean.com>",
+  "registryDependencies": [],
+  "dependencies": [
+    "lucide-react"
+  ],
+  "files": [
+    {
+      "path": "content/components/flow/flow-01.tsx",
+      "content": "\"use client\";\n\nimport { Heart, Tag, Plane } from \"lucide-react\";\nimport { useState } from \"react\";\n\nexport default function Flow01() {\n    const [isLiked, setIsLiked] = useState(false);\n\n    return (\n        <div className=\"flex min-h-screen items-center justify-center bg-gray-50 p-8\">\n            <div className=\"w-[390px] rounded-[2.5rem] bg-white p-4 shadow-2xl\">\n                {/* Image Container */}\n                <div className=\"relative mb-4 aspect-square w-full overflow-hidden rounded-[2rem]\">\n                    <img\n                        src=\"https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=2832&auto=format&fit=crop\"\n                        alt=\"San Francisco Golden Gate Bridge\"\n                        className=\"h-full w-full object-cover\"\n                    />\n                </div>\n\n                {/* Title and Subtitle */}\n                <div className=\"mb-3\">\n                    <h2 className=\"mb-0.5 text-[2rem] font-bold leading-none text-gray-900\">\n                        San Francisco\n                    </h2>\n                    <p className=\"text-[15px] text-gray-400\">Premium economy</p>\n                </div>\n\n                {/* Price and Airport Info */}\n                <div className=\"mb-4 flex items-center gap-5\">\n                    <div className=\"flex items-center gap-2 text-gray-700\">\n                        <Tag className=\"h-[17px] w-[17px] text-gray-400\" />\n                        <span className=\"text-[15px] font-normal\">\n                            from <span className=\"font-bold text-gray-900\">$240</span>\n                        </span>\n                    </div>\n                    <div className=\"flex items-center gap-2 text-gray-700\">\n                        <Plane className=\"h-[17px] w-[17px] text-gray-400\" />\n                        <span className=\"text-[15px] font-semibold text-gray-900\">SFO</span>\n                    </div>\n                </div>\n\n                {/* CTA Button and Heart */}\n                <div className=\"flex items-center gap-3\">\n                    <button className=\"flex-1 rounded-full bg-[#1a1a1a] px-8 py-[15px] text-[15px] font-medium text-white transition-all hover:bg-gray-800\">\n                        Search flight\n                    </button>\n                    <button\n                        onClick={() => setIsLiked(!isLiked)}\n                        className=\"flex h-[54px] w-[54px] items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-red-200\"\n                    >\n                        <Heart\n                            className={`h-5 w-5 transition-colors ${isLiked\n                                    ? \"fill-red-500 text-red-500\"\n                                    : \"text-gray-300 hover:text-red-400\"\n                                }`}\n                        />\n                    </button>\n                </div>\n            </div>\n        </div>\n    );\n}\n",
+      "type": "registry:block",
+      "target": "components/legos/flow-01.tsx"
+    }
+  ],
+  "categories": [
+    "flow"
+  ]
+}

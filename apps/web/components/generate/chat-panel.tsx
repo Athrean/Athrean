@@ -2,15 +2,18 @@
 
 import { useRef, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { Sparkles, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Sparkles, Layers, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import type { ChatMessage, ReasoningStep, ContextUsage, Checkpoint } from '@/types'
+import type { ChatMessage, ReasoningStep, ContextUsage, Checkpoint, GenerationMode } from '@/types'
+import type { FileToolCall } from '@/types/project'
 import { MessageBubble, TypingIndicator } from './chat/chat-message'
 import { ChatInput } from './chat/chat-input'
 import { ChainOfThought } from './chain-of-thought'
 import { CheckpointDivider, AddCheckpointButton } from './reasoning/checkpoint'
 import { EmptyState } from './empty-state'
 import { ProjectDropdown } from './project-dropdown'
+import { ModeToggle } from './mode-toggle'
+import { ToolProgress } from './tool-progress'
 
 interface ChatPanelProps {
   messages: ChatMessage[]
@@ -26,6 +29,9 @@ interface ChatPanelProps {
   projectName?: string
   projectId?: string | null
   isAuthenticated?: boolean
+  generationMode?: GenerationMode
+  onModeChange?: (mode: GenerationMode) => void
+  toolCalls?: FileToolCall[]
 }
 
 export function ChatPanel({
@@ -42,12 +48,15 @@ export function ChatPanel({
   projectName = "New Project",
   projectId = null,
   isAuthenticated = false,
+  generationMode = 'component',
+  onModeChange,
+  toolCalls = [],
 }: ChatPanelProps): React.ReactElement {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, currentReasoning])
+  }, [messages, currentReasoning, toolCalls])
 
   const getCheckpointForMessage = (messageIndex: number): Checkpoint | undefined => {
     return checkpoints.find((cp) => cp.messageIndex === messageIndex)
@@ -92,12 +101,25 @@ export function ChatPanel({
               <span className="font-medium text-sm text-zinc-200">Athrean</span>
             )}
             <div className="flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-violet-400 animate-pulse" />
-              <p className="text-xs text-zinc-500 font-medium">Design Mode</p>
+              {generationMode === 'app' ? (
+                <Layers className="w-3 h-3 text-teal-400 animate-pulse" />
+              ) : (
+                <Sparkles className="w-3 h-3 text-violet-400 animate-pulse" />
+              )}
+              <p className="text-xs text-zinc-500 font-medium">
+                {generationMode === 'app' ? 'Build Mode' : 'Design Mode'}
+              </p>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
+          {onModeChange && (
+            <ModeToggle
+              mode={generationMode}
+              onModeChange={onModeChange}
+              disabled={isGenerating}
+            />
+          )}
           {isAuthenticated && onAddCheckpoint && messages.length > 0 && !isGenerating && (
             <AddCheckpointButton onClick={onAddCheckpoint} />
           )}
@@ -137,7 +159,12 @@ export function ChatPanel({
               <ChainOfThought steps={currentReasoning} isComplete={!isGenerating} />
             )}
 
-            {isGenerating && messages[messages.length - 1]?.role === 'user' && (
+            {/* Tool Progress - file operations in Build Mode */}
+            {generationMode === 'app' && toolCalls.length > 0 && (
+              <ToolProgress toolCalls={toolCalls} isStreaming={isGenerating} />
+            )}
+
+            {isGenerating && messages[messages.length - 1]?.role === 'user' && toolCalls.length === 0 && (
               <TypingIndicator />
             )}
             <div ref={messagesEndRef} className="h-4" />

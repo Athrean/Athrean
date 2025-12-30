@@ -1,58 +1,47 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { SandpackProvider, SandpackPreview, useSandpack } from "@codesandbox/sandpack-react";
-import { AlertTriangle, RefreshCw } from "lucide-react";
-import type { Device } from "./types";
-import { DEVICE_WIDTHS } from "./types";
-import { PreviewErrorBoundary } from "./preview-error-boundary";
+import { useMemo } from "react"
+import {
+  SandpackProvider,
+  SandpackPreview,
+  useSandpack,
+} from "@codesandbox/sandpack-react"
+import { AlertTriangle, RefreshCw } from "lucide-react"
+import type { Device } from "./types"
+import { DEVICE_WIDTHS } from "./types"
+import { PreviewErrorBoundary } from "./preview-error-boundary"
 
-interface BundlerListenerProps {
-  onReady: () => void;
-  onError: (error: string) => void;
+type BundlerListenerProps = {
+  onReady: () => void
+  onError: (error: string) => void
 }
 
 function BundlerListener({ onReady, onError }: BundlerListenerProps): null {
-  const { listen } = useSandpack();
+  const { listen } = useSandpack()
 
-  useEffect(() => {
+  useMemo(() => {
     const unsubscribe = listen((msg) => {
       if (msg.type === "done" || (msg.type === "status" && msg.status === "done")) {
-        onReady();
+        onReady()
       }
       if (msg.type === "action" && msg.action === "show-error") {
-        onError(msg.message || "An error occurred in the preview");
+        onError(msg.message || "Preview error")
       }
-      if (msg.type === "console" && msg.log?.some((l) => l.method === "error")) {
-        const errorLog = msg.log?.find((l) => l.method === "error");
-        if (errorLog?.data?.[0]) {
-          onError(String(errorLog.data[0]));
-        }
-      }
-    });
-    return () => unsubscribe();
-  }, [listen, onReady, onError]);
+    })
+    return unsubscribe
+  }, [listen, onReady, onError])
 
-  return null;
+  return null
 }
 
-interface SandpackInnerProps {
-  device: Device;
-  onReady: () => void;
-  onReset: () => void;
+type SandpackInnerProps = {
+  device: Device
+  onReady: () => void
+  onReset: () => void
 }
 
 function SandpackInner({ device, onReady, onReset }: SandpackInnerProps): React.ReactElement {
-  const [error, setError] = useState<string | null>(null);
-
-  const handleError = (errorMsg: string): void => {
-    setError(errorMsg);
-  };
-
-  const handleRetry = (): void => {
-    setError(null);
-    onReset();
-  };
+  const [error, setError] = useState<string | null>(null)
 
   if (error) {
     return (
@@ -60,22 +49,22 @@ function SandpackInner({ device, onReady, onReset }: SandpackInnerProps): React.
         <AlertTriangle className="w-10 h-10 text-amber-500" />
         <div className="text-center">
           <h3 className="text-sm font-medium text-zinc-200 mb-2">Preview Error</h3>
-          <p className="text-xs text-zinc-400 max-w-md wrap-break-word line-clamp-4">{error}</p>
+          <p className="text-xs text-zinc-400 max-w-md line-clamp-4">{error}</p>
         </div>
         <button
-          onClick={handleRetry}
-          className="flex items-center gap-2 px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors"
+          onClick={() => { setError(null); onReset() }}
+          className="flex items-center gap-2 px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
         >
           <RefreshCw className="w-4 h-4" />
           Retry
         </button>
       </div>
-    );
+    )
   }
 
   return (
     <>
-      <BundlerListener onReady={onReady} onError={handleError} />
+      <BundlerListener onReady={onReady} onError={setError} />
       <SandpackPreview
         showNavigator={false}
         showOpenInCodeSandbox={false}
@@ -90,30 +79,142 @@ function SandpackInner({ device, onReady, onReset }: SandpackInnerProps): React.
         }}
       />
     </>
-  );
+  )
 }
+
+import { useState } from "react"
 
 export function buildFiles(code: string): Record<string, string> {
   return {
-    "/App.tsx": `import Generated from "./Generated";
+    "/App.tsx": `import Generated from "./Generated"
 
 export default function App() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4">
       <Generated />
     </div>
-  );
+  )
 }`,
     "/Generated.tsx": code,
-  };
+  }
 }
 
-interface SandpackWrapperProps {
-  files: Record<string, string>;
-  instanceKey: number;
-  device: Device;
-  onReady: () => void;
-  onReset: () => void;
+export function buildAppFiles(
+  projectFiles: Map<string, string> | Record<string, string>
+): Record<string, string> {
+  const files: Record<string, string> = {}
+  const entries = projectFiles instanceof Map
+    ? Array.from(projectFiles.entries())
+    : Object.entries(projectFiles)
+
+  for (const [path, content] of entries) {
+    if (isConfigFile(path)) continue
+
+    const sandpackPath = normalizePath(path)
+    files[sandpackPath] = transformContent(content)
+  }
+
+  const pageFile = findPageFile(entries)
+  if (pageFile) {
+    files["/App.tsx"] = createAppEntry(pageFile[0])
+  } else if (!files["/App.tsx"]) {
+    files["/App.tsx"] = createEmptyApp()
+  }
+
+  if (!hasUtilsFile(entries)) {
+    files["/lib/utils.ts"] = createUtilsFile()
+  }
+
+  return files
+}
+
+function isConfigFile(path: string): boolean {
+  return (
+    path.includes("tailwind.config") ||
+    path.includes("next.config") ||
+    path.includes("tsconfig") ||
+    path.includes("package.json")
+  )
+}
+
+function normalizePath(path: string): string {
+  let normalized = path.startsWith("/") ? path : `/${path}`
+  if (normalized.startsWith("/src/")) {
+    normalized = normalized.replace("/src/", "/")
+  }
+  return normalized
+}
+
+function transformContent(content: string): string {
+  return content
+    .replace(/['"]use client['"];?\s*/g, "")
+    .replace(/import\s+.*from\s+['"]next\/(?:image|link|navigation|font\/.*)['"]\s*;?\s*/g, "")
+    .replace(/<Image\s/g, "<img ")
+    .replace(/<\/Image>/g, "</img>")
+    .replace(/<Link\s/g, "<a ")
+    .replace(/<\/Link>/g, "</a>")
+    .replace(/from\s+['"]@\/([^'"]+)['"]/g, (_, p) => `from "/${p}"`)
+}
+
+function findPageFile(entries: Array<[string, string]>): [string, string] | null {
+  const priorities = [
+    "src/app/page.tsx",
+    "app/page.tsx",
+    "src/pages/index.tsx",
+    "pages/index.tsx",
+  ]
+
+  for (const priority of priorities) {
+    const match = entries.find(([p]) => p === priority || p === `/${priority}`)
+    if (match) return match
+  }
+
+  return entries.find(([p]) => p.endsWith(".tsx")) ?? null
+}
+
+function createAppEntry(pagePath: string): string {
+  let importPath = pagePath.startsWith("/") ? pagePath : `/${pagePath}`
+  if (importPath.startsWith("/src/")) {
+    importPath = importPath.replace("/src/", "/")
+  }
+  importPath = importPath.replace(/\.tsx$/, "")
+
+  return `import Page from ".${importPath}"
+
+export default function App() {
+  return <Page />
+}`
+}
+
+function createEmptyApp(): string {
+  return `export default function App() {
+  return (
+    <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4">
+      <p className="text-zinc-400">No preview available</p>
+    </div>
+  )
+}`
+}
+
+function hasUtilsFile(entries: Array<[string, string]>): boolean {
+  return entries.some(([p]) => p.includes("lib/utils"))
+}
+
+function createUtilsFile(): string {
+  return `import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs))
+}`
+}
+
+type SandpackWrapperProps = {
+  files: Record<string, string>
+  instanceKey: number
+  device: Device
+  onReady: () => void
+  onReset: () => void
 }
 
 export function SandpackWrapper({
@@ -133,17 +234,14 @@ export function SandpackWrapper({
         options={{
           externalResources: ["https://cdn.tailwindcss.com"],
           recompileMode: "delayed",
-          recompileDelay: 400,
-          classes: {
-            "sp-wrapper": "h-full",
-            "sp-layout": "h-full",
-            "sp-preview": "h-full",
-          },
+          recompileDelay: 300,
         }}
         customSetup={{
           dependencies: {
             "framer-motion": "^10.18.0",
             "lucide-react": "^0.400.0",
+            "clsx": "^2.1.0",
+            "tailwind-merge": "^2.2.0",
           },
         }}
         style={{ height: "100%" }}
@@ -151,5 +249,5 @@ export function SandpackWrapper({
         <SandpackInner device={device} onReady={onReady} onReset={onReset} />
       </SandpackProvider>
     </PreviewErrorBoundary>
-  );
+  )
 }

@@ -6,10 +6,16 @@ import type {
   ReasoningStep,
   ContextUsage,
   Checkpoint,
+  GenerationMode,
+  SyncStatus,
+  SupabaseConfig,
+  BuildModeStore,
 } from '@/types'
 import { generateReasoningId } from '@/types/reasoning'
 
-export const useGenerateStore = create<GenerateStore>((set, get) => ({
+type CombinedStore = GenerateStore & BuildModeStore
+
+export const useGenerateStore = create<CombinedStore>((set, get) => ({
   // Core state
   pendingPrompt: null,
   baseComponent: null,
@@ -25,6 +31,14 @@ export const useGenerateStore = create<GenerateStore>((set, get) => ({
   currentReasoning: [],
   currentContextUsage: null,
   checkpoints: [],
+
+  // Build Mode state
+  generationMode: 'component' as GenerationMode,
+  activeFilePath: null,
+  supabaseConfig: null,
+  syncStatus: 'synced' as SyncStatus,
+  appProjectId: null,
+  fileCount: 0,
 
   // Core actions
   setPendingPrompt: (prompt: string | null): void => {
@@ -149,5 +163,46 @@ export const useGenerateStore = create<GenerateStore>((set, get) => ({
 
   clearCheckpoints: (): void => {
     set({ checkpoints: [] })
+  },
+
+  // Build Mode actions
+  setGenerationMode: (mode: GenerationMode): void => {
+    set({
+      generationMode: mode,
+      // Reset some state when switching modes
+      activeFilePath: null,
+      generatedCode: null,
+    })
+  },
+
+  setActiveFile: (path: string | null): void => {
+    set({ activeFilePath: path })
+  },
+
+  setSupabaseConfig: (config: SupabaseConfig | null): void => {
+    set({ supabaseConfig: config })
+  },
+
+  setSyncStatus: (status: SyncStatus): void => {
+    set({ syncStatus: status })
+  },
+
+  setAppProjectId: (id: string | null): void => {
+    set({ appProjectId: id })
+  },
+
+  setFileCount: (count: number): void => {
+    set({ fileCount: count })
+  },
+
+  resetBuildMode: (): void => {
+    set({
+      generationMode: 'component',
+      activeFilePath: null,
+      supabaseConfig: null,
+      syncStatus: 'synced',
+      appProjectId: null,
+      fileCount: 0,
+    })
   },
 }))

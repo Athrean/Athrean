@@ -4,6 +4,9 @@ import type { ReasoningStep, ContextUsage, Checkpoint } from './reasoning'
 // Re-export reasoning types
 export * from './reasoning'
 
+// Re-export project types (Build Mode)
+export * from './project'
+
 // ============================================
 // Registry-based Component Library Types
 // ============================================

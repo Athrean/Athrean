@@ -4,49 +4,40 @@
  * Generate Page Content Component
  *
  * Main content component for the generate page.
- * Handles mode switching between Component and Build App modes.
+ * Build Mode only - generates full-stack applications with multi-file output.
  */
 
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useGenerateStore } from '@/stores/generate-store'
 import { ChatPanel } from '@/components/generate/chat-panel'
-import { PreviewPanel } from '@/components/generate/preview-panel'
 import { AppPreviewPanel } from '@/components/generate/app-preview-panel'
-import { useGenerateWithReasoning } from '@/hooks/use-generate-with-reasoning'
 import { useChatApp, useToolCallsFromMessages } from '@/hooks/use-chat-app'
-import { FileSystemProvider } from '@/lib/fs/fs-provider'
+import { FileSystemProvider, useFileSystemReady, useFileSystem } from '@/lib/fs/fs-provider'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import type { ChatMessage } from '@/types'
 
-// Generate a unique project ID for app mode
+// Generate a unique project ID
 function generateProjectId(): string {
   return `project_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
 }
 
 export function GeneratePageContent(): React.ReactElement {
-  const [appProjectId] = useState(() => generateProjectId())
-  const { generationMode } = useGenerateStore()
+  const [projectId] = useState(() => generateProjectId())
 
-  // Render different components based on mode
-  // App mode needs FileSystemProvider wrapper
-  if (generationMode === 'app') {
-    return (
-      <FileSystemProvider projectId={appProjectId}>
-        <AppModeContent />
-      </FileSystemProvider>
-    )
-  }
-
-  return <ComponentModeContent />
+  return (
+    <FileSystemProvider projectId={projectId}>
+      <BuildModeContent />
+    </FileSystemProvider>
+  )
 }
 
 // ============================================================================
-// COMPONENT MODE
+// BUILD MODE (with FileSystemProvider)
 // ============================================================================
 
-function ComponentModeContent(): React.ReactElement {
+function BuildModeContent(): React.ReactElement {
   const hasInitialized = useRef(false)
   const hasLoadedProject = useRef(false)
   const [sidebarWidth, setSidebarWidth] = useState(400)
@@ -55,162 +46,21 @@ function ComponentModeContent(): React.ReactElement {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const searchParams = useSearchParams()
-  const projectId = searchParams.get('project')
-
-  const {
-    messages,
-    generatedCode,
-    isGenerating,
-    currentReasoning,
-    currentContextUsage,
-    checkpoints,
-    consumePendingPrompt,
-    addCheckpoint,
-    restoreCheckpoint,
-    currentProjectId,
-    projectName,
-    loadProject,
-    generationMode,
-    setGenerationMode,
-  } = useGenerateStore()
-
-  const { handleGenerate } = useGenerateWithReasoning()
-
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = async (): Promise<void> => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      setIsAuthenticated(!!user)
-    }
-    checkAuth()
-  }, [])
-
-  // Load project from URL parameter
-  useEffect(() => {
-    if (hasLoadedProject.current || !projectId || currentProjectId === projectId) return
-
-    const loadProjectFromUrl = async (): Promise<void> => {
-      try {
-        const response = await fetch(`/api/projects/${projectId}`)
-        if (!response.ok) {
-          console.error('Failed to load project:', response.statusText)
-          return
-        }
-
-        const project = await response.json()
-        loadProject({
-          id: project.id,
-          name: project.name,
-          code: project.code,
-          prompt: project.prompt,
-        })
-        hasLoadedProject.current = true
-      } catch (error) {
-        console.error('Error loading project:', error)
-      }
-    }
-
-    loadProjectFromUrl()
-  }, [projectId, currentProjectId, loadProject])
-
-  // Resizing logic
-  const { startResizing, resize, stopResizing } = useResizing(
-    isResizing,
-    setIsResizing,
-    setSidebarWidth
-  )
-
-  useEffect(() => {
-    window.addEventListener('mousemove', resize)
-    window.addEventListener('mouseup', stopResizing)
-    return (): void => {
-      window.removeEventListener('mousemove', resize)
-      window.removeEventListener('mouseup', stopResizing)
-    }
-  }, [resize, stopResizing])
-
-  // Handle pending prompt on mount
-  useEffect(() => {
-    if (hasInitialized.current) return
-    hasInitialized.current = true
-
-    const pendingPrompt = consumePendingPrompt()
-    if (pendingPrompt) {
-      handleGenerate(pendingPrompt, true)
-    }
-  }, [consumePendingPrompt, handleGenerate])
-
-  const handleAddCheckpoint = useCallback((): void => {
-    const lastMessage = messages[messages.length - 1]
-    const label = lastMessage
-      ? `After: ${lastMessage.content.slice(0, 30)}...`
-      : 'Checkpoint'
-    addCheckpoint(label)
-  }, [messages, addCheckpoint])
-
-  const handleSubmit = useCallback(
-    (prompt: string): void => {
-      handleGenerate(prompt, true)
-    },
-    [handleGenerate]
-  )
-
-  return (
-    <div className="flex h-screen w-full bg-zinc-950 overflow-hidden">
-      <div
-        style={{ width: isSidebarCollapsed ? 60 : sidebarWidth }}
-        className={cn(
-          'shrink-0 flex flex-col bg-zinc-950 relative transition-[width] duration-300 ease-in-out',
-          isResizing && 'transition-none'
-        )}
-      >
-        <ChatPanel
-          messages={messages}
-          onSubmit={handleSubmit}
-          isGenerating={isGenerating}
-          currentReasoning={currentReasoning}
-          contextUsage={currentContextUsage}
-          checkpoints={checkpoints}
-          onAddCheckpoint={handleAddCheckpoint}
-          onRestoreCheckpoint={restoreCheckpoint}
-          isCollapsed={isSidebarCollapsed}
-          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          projectName={projectName}
-          projectId={currentProjectId}
-          isAuthenticated={isAuthenticated}
-          generationMode={generationMode}
-          onModeChange={setGenerationMode}
-        />
-      </div>
-
-      <div className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative">
-        {!isSidebarCollapsed && (
-          <ResizeHandle isResizing={isResizing} onMouseDown={startResizing} />
-        )}
-        <PreviewPanel code={generatedCode} isLoading={isGenerating} />
-      </div>
-    </div>
-  )
-}
-
-// ============================================================================
-// APP MODE (with FileSystemProvider)
-// ============================================================================
-
-function AppModeContent(): React.ReactElement {
-  const [sidebarWidth, setSidebarWidth] = useState(400)
-  const [isResizing, setIsResizing] = useState(false)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const urlProjectId = searchParams.get('project')
 
   const {
     projectName,
     currentProjectId,
     generationMode,
-    setGenerationMode,
     supabaseConfig,
+    consumePendingPrompt,
+    consumePendingProjectFiles,
+    loadProject,
   } = useGenerateStore()
+
+  // Check if filesystem is ready
+  const isFileSystemReady = useFileSystemReady()
+  const { writeFile } = useFileSystem()
 
   // App mode hook - uses FileSystemProvider context
   const {
@@ -236,6 +86,63 @@ function AppModeContent(): React.ReactElement {
     }
     checkAuth()
   }, [])
+
+  // Load project from URL parameter
+  useEffect(() => {
+    if (hasLoadedProject.current || !urlProjectId || currentProjectId === urlProjectId) return
+    if (!isFileSystemReady) return
+
+    const loadProjectFromUrl = async (): Promise<void> => {
+      try {
+        const response = await fetch(`/api/projects/${urlProjectId}`)
+        if (!response.ok) {
+          console.error('Failed to load project:', response.statusText)
+          return
+        }
+
+        const project = await response.json()
+        loadProject({
+          id: project.id,
+          name: project.name,
+          code: project.code,
+          prompt: project.prompt,
+        })
+        hasLoadedProject.current = true
+      } catch (error) {
+        console.error('Error loading project:', error)
+      }
+    }
+
+    loadProjectFromUrl()
+  }, [urlProjectId, currentProjectId, isFileSystemReady, loadProject])
+
+  // Load pending project files into FileSystem
+  useEffect(() => {
+    if (!isFileSystemReady) return
+
+    const files = consumePendingProjectFiles()
+    if (!files) return
+
+    const loadFilesToFS = async (): Promise<void> => {
+      for (const [path, content] of Object.entries(files)) {
+        await writeFile(path, content)
+      }
+    }
+
+    loadFilesToFS()
+  }, [isFileSystemReady, consumePendingProjectFiles, writeFile])
+
+  // Handle pending prompt - wait for filesystem to be ready
+  useEffect(() => {
+    if (hasInitialized.current) return
+    if (!isFileSystemReady) return
+
+    hasInitialized.current = true
+    const prompt = consumePendingPrompt()
+    if (prompt) {
+      sendMessage(prompt)
+    }
+  }, [isFileSystemReady, consumePendingPrompt, sendMessage])
 
   // Resizing logic
   const { startResizing, resize, stopResizing } = useResizing(
@@ -278,11 +185,11 @@ function AppModeContent(): React.ReactElement {
   })
 
   return (
-    <div className="flex h-screen w-full bg-zinc-950 overflow-hidden">
+    <div className="flex h-screen max-h-screen w-full overflow-hidden bg-zinc-950">
       <div
         style={{ width: isSidebarCollapsed ? 60 : sidebarWidth }}
         className={cn(
-          'shrink-0 flex flex-col bg-zinc-950 relative transition-[width] duration-300 ease-in-out',
+          'shrink-0 flex flex-col relative transition-[width] duration-300 ease-in-out bg-zinc-950',
           isResizing && 'transition-none'
         )}
       >
@@ -296,12 +203,11 @@ function AppModeContent(): React.ReactElement {
           projectId={currentProjectId}
           isAuthenticated={isAuthenticated}
           generationMode={generationMode}
-          onModeChange={setGenerationMode}
           toolCalls={toolCalls}
         />
       </div>
 
-      <div className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative">
+      <div className="flex-1 flex flex-col min-w-0 relative bg-zinc-950">
         {!isSidebarCollapsed && (
           <ResizeHandle isResizing={isResizing} onMouseDown={startResizing} />
         )}

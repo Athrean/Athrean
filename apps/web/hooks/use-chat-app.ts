@@ -32,8 +32,10 @@ interface UseChatAppReturn {
   status: 'ready' | 'submitted' | 'streaming' | 'error'
   error: Error | undefined
   sendMessage: (text: string) => Promise<void>
+  regenerate: () => Promise<void>
   stop: () => void
   pendingToolCalls: FileToolCall[]
+  canRegenerate: boolean
 }
 
 // ============================================================================
@@ -153,6 +155,7 @@ export function useChatApp(options: UseChatAppOptions = {}): UseChatAppReturn {
   const {
     messages,
     sendMessage: chatSendMessage,
+    regenerate: chatRegenerate,
     status,
     error,
     stop,
@@ -178,6 +181,26 @@ export function useChatApp(options: UseChatAppOptions = {}): UseChatAppReturn {
     [chatSendMessage, model, supabaseConfig, fs]
   )
 
+  // Wrapper for regenerate that includes file context
+  const regenerate = useCallback(
+    async (): Promise<void> => {
+      const currentFiles = await fs.getAllFiles()
+      await chatRegenerate({
+        body: {
+          model,
+          supabaseConfig,
+          files: currentFiles,
+        },
+      })
+    },
+    [chatRegenerate, model, supabaseConfig, fs]
+  )
+
+  // Check if we can regenerate (need at least one assistant message)
+  const canRegenerate = useMemo(() => {
+    return messages.some(m => m.role === 'assistant')
+  }, [messages])
+
   // Report errors - use ref to avoid infinite loops
   const lastErrorRef = useRef<Error | null>(null)
   useEffect(() => {
@@ -192,8 +215,10 @@ export function useChatApp(options: UseChatAppOptions = {}): UseChatAppReturn {
     status,
     error,
     sendMessage,
+    regenerate,
     stop,
     pendingToolCalls,
+    canRegenerate,
   }
 }
 

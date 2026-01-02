@@ -7,7 +7,7 @@ import {
   Plus,
   Paperclip,
   Palette,
-  MessageSquare,
+  Blocks,
   AudioLines,
   ArrowUp,
   ChevronDown,
@@ -21,7 +21,7 @@ interface AiChatInputProps {
 }
 
 export function AiChatInput({
-  placeholder = "Ask Athrean to create an internal tool that..",
+  placeholder = "Ask Athrean to build you an app that..",
   className,
 }: AiChatInputProps) {
   const [input, setInput] = useState("");
@@ -54,7 +54,7 @@ export function AiChatInput({
       <form onSubmit={handleSubmit}>
         <div
           className={cn(
-            "relative rounded-[20px] bg-[#323333] overflow-hidden transition-all duration-200",
+            "relative rounded-[20px] bg-zinc-900 overflow-hidden transition-all duration-200",
             isFocused
               ? "ring-1 ring-zinc-600"
               : "ring-1 ring-zinc-700/50"
@@ -105,9 +105,10 @@ export function AiChatInput({
 
             {/* Right toolbar */}
             <div className="flex items-center gap-1">
-              <ToolbarButton variant="outlined">
-                <MessageSquare className="w-4 h-4" />
-                <span>Chat</span>
+              {/* Build Mode indicator - always active */}
+              <ToolbarButton variant="outlined" isActive>
+                <Blocks className="w-4 h-4" />
+                <span>Build</span>
               </ToolbarButton>
 
               <ToolbarButton>
@@ -138,10 +139,12 @@ function ToolbarButton({
   children,
   onClick,
   variant = "default",
+  isActive = false,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: "default" | "outlined";
+  isActive?: boolean;
 }) {
   return (
     <button
@@ -149,9 +152,11 @@ function ToolbarButton({
       onClick={onClick}
       className={cn(
         "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
-        variant === "outlined"
-          ? "text-zinc-300 border border-zinc-600 hover:bg-zinc-700/50 hover:text-white"
-          : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50"
+        variant === "outlined" && isActive
+          ? "text-teal-400 border border-teal-600 bg-teal-600/20"
+          : variant === "outlined"
+            ? "text-zinc-300 border border-zinc-600 hover:bg-zinc-700/50 hover:text-white"
+            : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50"
       )}
     >
       {children}

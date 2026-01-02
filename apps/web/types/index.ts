@@ -173,18 +173,12 @@ export interface GenerateStore {
 // Input types for mutations
 export interface SaveGenerationInput {
   name: string
-  code: string
   prompt: string
   model?: string
   durationMs?: number
   isPublic?: boolean
-}
-
-export interface LogGenerationInput {
-  prompt: string
-  resultCode: string | null
-  model: string
-  durationMs: number
+  // Multi-file project support (Build Mode)
+  files: Record<string, string>
 }
 
 // ============================================

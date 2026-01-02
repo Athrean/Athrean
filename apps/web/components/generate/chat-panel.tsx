@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { Sparkles, Layers, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Sparkles, PanelLeftClose, PanelLeftOpen, Blocks } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { ChatMessage, ReasoningStep, ContextUsage, Checkpoint, GenerationMode } from '@/types'
 import type { FileToolCall } from '@/types/project'
@@ -12,7 +12,6 @@ import { ChainOfThought } from './chain-of-thought'
 import { CheckpointDivider, AddCheckpointButton } from './reasoning/checkpoint'
 import { EmptyState } from './empty-state'
 import { ProjectDropdown } from './project-dropdown'
-import { ModeToggle } from './mode-toggle'
 import { ToolProgress } from './tool-progress'
 
 interface ChatPanelProps {
@@ -30,7 +29,6 @@ interface ChatPanelProps {
   projectId?: string | null
   isAuthenticated?: boolean
   generationMode?: GenerationMode
-  onModeChange?: (mode: GenerationMode) => void
   toolCalls?: FileToolCall[]
 }
 
@@ -48,8 +46,7 @@ export function ChatPanel({
   projectName = "New Project",
   projectId = null,
   isAuthenticated = false,
-  generationMode = 'component',
-  onModeChange,
+  generationMode = 'app',
   toolCalls = [],
 }: ChatPanelProps): React.ReactElement {
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -64,7 +61,7 @@ export function ChatPanel({
 
   if (isCollapsed) {
     return (
-      <div className="flex flex-col h-full bg-zinc-950 items-center py-4 border-r border-zinc-800">
+      <div className="flex flex-col h-full items-center py-4 border-r border-zinc-800 bg-zinc-950">
         <Button
           variant="ghost"
           size="icon"
@@ -87,39 +84,32 @@ export function ChatPanel({
   return (
     <div className="flex flex-col h-full bg-zinc-950">
       {/* Header */}
-      <div className="shrink-0 px-6 py-4 flex items-center justify-between bg-zinc-950">
-        <div className="flex items-center gap-3">
+      <div className="shrink-0 px-4 py-3 flex items-center justify-between bg-zinc-950">
+        <div className="flex items-center gap-2">
           <img
             src="/vector-logo.png"
             alt="Athrean"
-            className="w-9 h-9 object-contain"
+            className="w-7 h-7 object-contain"
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-0.5">
             {isAuthenticated ? (
               <ProjectDropdown projectName={projectName} projectId={projectId} />
             ) : (
               <span className="font-medium text-sm text-zinc-200">Athrean</span>
             )}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               {generationMode === 'app' ? (
-                <Layers className="w-3 h-3 text-teal-400 animate-pulse" />
+                <Blocks className="w-3 h-3 text-teal-400" />
               ) : (
-                <Sparkles className="w-3 h-3 text-violet-400 animate-pulse" />
+                <Sparkles className="w-3 h-3 text-violet-400" />
               )}
-              <p className="text-xs text-zinc-500 font-medium">
+              <p className="text-xs text-zinc-500">
                 {generationMode === 'app' ? 'Build Mode' : 'Design Mode'}
               </p>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {onModeChange && (
-            <ModeToggle
-              mode={generationMode}
-              onModeChange={onModeChange}
-              disabled={isGenerating}
-            />
-          )}
           {isAuthenticated && onAddCheckpoint && messages.length > 0 && !isGenerating && (
             <AddCheckpointButton onClick={onAddCheckpoint} />
           )}

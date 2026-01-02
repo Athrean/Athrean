@@ -45,8 +45,8 @@ export function Sidebar({ userEmail, userAvatarUrl }: SidebarProps): React.React
   return (
     <aside
       className={cn(
-        "sticky top-0 z-50 flex h-[calc(100vh-32px)] flex-col overflow-hidden rounded-2xl bg-[#323333] shadow-[0_20px_60px_-35px_rgba(0,0,0,0.8)] transition-[width] duration-300",
-        collapsed ? "w-[84px]" : "w-[280px]",
+        "flex h-full flex-col overflow-hidden border-r border-zinc-800 bg-zinc-900 transition-[width] duration-300 shrink-0",
+        collapsed ? "w-[80px]" : "w-[280px]",
       )}
     >
       <div className="relative px-3 pt-3 pb-2">
@@ -125,6 +125,6 @@ export function Sidebar({ userEmail, userAvatarUrl }: SidebarProps): React.React
           </Button>
         </form>
       </div>
-    </aside>
+    </aside >
   )
 }

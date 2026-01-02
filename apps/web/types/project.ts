@@ -8,7 +8,8 @@
 // GENERATION MODE
 // ============================================================================
 
-export type GenerationMode = 'component' | 'app'
+// Only 'app' mode is supported - full-stack multi-file generation
+export type GenerationMode = 'app'
 
 // ============================================================================
 // SYNC STATUS
@@ -166,6 +167,7 @@ export interface BuildModeState {
   syncStatus: SyncStatus
   appProjectId: string | null
   fileCount: number
+  pendingProjectFiles: Record<string, string> | null
 }
 
 export interface BuildModeActions {
@@ -176,6 +178,7 @@ export interface BuildModeActions {
   setAppProjectId: (id: string | null) => void
   setFileCount: (count: number) => void
   resetBuildMode: () => void
+  consumePendingProjectFiles: () => Record<string, string> | null
 }
 
 export type BuildModeStore = BuildModeState & BuildModeActions

@@ -3,13 +3,12 @@
 import { createClient } from '@/lib/supabase/client'
 import type {
   SaveGenerationInput,
-  LogGenerationInput,
   UserGeneration,
   UserProfile,
   UpdateProfileInput,
 } from '@/types'
 
-// Save a user-generated AI component
+// Save a user-generated AI project (Build Mode - multi-file)
 export async function saveUserGeneration(data: SaveGenerationInput): Promise<UserGeneration | null> {
   const supabase = createClient()
 
@@ -18,12 +17,18 @@ export async function saveUserGeneration(data: SaveGenerationInput): Promise<Use
     throw new Error('User not authenticated')
   }
 
+  // Store files as JSON in the code field with a marker
+  const codePayload = JSON.stringify({
+    __athrean_project: true,
+    files: data.files,
+  })
+
   const { data: generation, error } = await supabase
     .from('user_generations')
     .insert({
       user_id: user.id,
       name: data.name,
-      code: data.code,
+      code: codePayload,
       prompt: data.prompt,
       model: data.model ?? null,
       duration_ms: data.durationMs ?? null,

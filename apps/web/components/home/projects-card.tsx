@@ -30,8 +30,8 @@ export function ProjectsCard({ recentProjects, myProjects, isAuthenticated }: Pr
   return (
     <section className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-[#323333] rounded-2xl p-8 md:p-10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+        <div className="bg-zinc-900 rounded-2xl p-8 md:p-10">
+          <div className="sticky top-0 z-40 bg-zinc-900/95 backdrop-blur-sm pb-6 pt-2 mb-8 -mx-8 px-8 border-b border-zinc-800/50 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <p className="text-xs uppercase tracking-[0.25em] text-zinc-600 mb-2">Workspace</p>
               <h2 className="text-3xl md:text-4xl font-bold text-white">Projects</h2>

@@ -114,6 +114,12 @@ export default function GradientBlinds({
       const width = rect.width;
       const height = rect.height;
 
+      // Guard against non-finite dimensions
+      if (width <= 0 || height <= 0 || !Number.isFinite(width) || !Number.isFinite(height)) {
+        animationFrameRef.current = requestAnimationFrame(draw);
+        return;
+      }
+
       // Smooth mouse movement
       mouseRef.current.x = lerp(mouseRef.current.x, targetMouseRef.current.x, mouseDampening);
       mouseRef.current.y = lerp(mouseRef.current.y, targetMouseRef.current.y, mouseDampening);
@@ -160,23 +166,27 @@ export default function GradientBlinds({
       const spotlightX = mouseRef.current.x * width;
       const spotlightY = mouseRef.current.y * height;
       const maxRadius = Math.max(width, height) * spotlightRadius;
+      const outerRadius = maxRadius * (1 + spotlightSoftness);
 
-      const spotlight = ctx.createRadialGradient(
-        spotlightX,
-        spotlightY,
-        0,
-        spotlightX,
-        spotlightY,
-        maxRadius * (1 + spotlightSoftness)
-      );
-      spotlight.addColorStop(0, `rgba(255, 255, 255, ${spotlightOpacity})`);
-      spotlight.addColorStop(0.5, `rgba(255, 255, 255, ${spotlightOpacity * 0.3})`);
-      spotlight.addColorStop(1, "rgba(255, 255, 255, 0)");
+      // Only create gradient if all values are finite and positive
+      if (Number.isFinite(spotlightX) && Number.isFinite(spotlightY) && outerRadius > 0) {
+        const spotlight = ctx.createRadialGradient(
+          spotlightX,
+          spotlightY,
+          0,
+          spotlightX,
+          spotlightY,
+          outerRadius
+        );
+        spotlight.addColorStop(0, `rgba(255, 255, 255, ${spotlightOpacity})`);
+        spotlight.addColorStop(0.5, `rgba(255, 255, 255, ${spotlightOpacity * 0.3})`);
+        spotlight.addColorStop(1, "rgba(255, 255, 255, 0)");
 
-      ctx.globalCompositeOperation = mixBlendMode as GlobalCompositeOperation;
-      ctx.fillStyle = spotlight;
-      ctx.fillRect(0, 0, width, height);
-      ctx.globalCompositeOperation = "source-over";
+        ctx.globalCompositeOperation = mixBlendMode as GlobalCompositeOperation;
+        ctx.fillStyle = spotlight;
+        ctx.fillRect(0, 0, width, height);
+        ctx.globalCompositeOperation = "source-over";
+      }
 
       // Add noise
       if (noise > 0) {

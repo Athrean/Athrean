@@ -7,19 +7,19 @@
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { Globe, Code2, RefreshCw, Save } from 'lucide-react'
+import { toast } from 'sonner'
 import type { Tab, Device } from './preview/types'
-import { PreviewHeader } from './preview/preview-header'
 import { SandpackWrapper, buildAppFiles } from './preview/sandpack-wrapper'
-import {
-  LoadingOverlay,
-  UpdatingOverlay,
-  SlowWarningOverlay,
-} from './preview/preview-overlays'
 import { PreviewEmptyState } from './preview/preview-empty-state'
+import { previewCards } from './preview/constants'
 import { FileTree } from './file-tree'
 import { DownloadZip } from './download-zip'
 import { useFileSystem } from '@/lib/fs/fs-provider'
 import { useGenerateStore } from '@/stores/generate-store'
+import { cn } from '@/lib/utils'
+import { CardStack } from '@/components/ui/card-stack'
+import { saveGeneration } from '@/app/actions/component'
 
 interface AppPreviewPanelProps {
   isLoading: boolean
@@ -34,14 +34,16 @@ export function AppPreviewPanel({
   const [device, setDevice] = useState<Device>('desktop')
   const [instanceKey, setInstanceKey] = useState(0)
   const [isReady, setIsReady] = useState(false)
-  const [showSlowWarning, setShowSlowWarning] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
-  const { files, isInitialized, getAllFiles } = useFileSystem()
-  const { activeFilePath, setActiveFile, fileCount } = useGenerateStore()
+  const { files, getAllFiles } = useFileSystem()
+  const { activeFilePath, setActiveFile, setCurrentProjectId } = useGenerateStore()
 
   // Build Sandpack files from ZenFS
   const sandpackFiles = useMemo(() => {
+    console.log('[AppPreviewPanel] files.size:', files.size)
     if (files.size === 0) return null
+    console.log('[AppPreviewPanel] Building sandpack files from:', Array.from(files.keys()))
     return buildAppFiles(files)
   }, [files])
 
@@ -54,14 +56,7 @@ export function AppPreviewPanel({
   // Reset ready state when files change
   useEffect(() => {
     setIsReady(false)
-    setShowSlowWarning(false)
-    const timer = setTimeout(() => setShowSlowWarning(true), 15000) // Longer timeout for multi-file
-    return () => clearTimeout(timer)
   }, [sandpackFiles, instanceKey])
-
-  useEffect(() => {
-    if (isReady) setShowSlowWarning(false)
-  }, [isReady])
 
   const handleRestart = useCallback((): void => {
     setInstanceKey((k) => k + 1)
@@ -76,79 +71,119 @@ export function AppPreviewPanel({
     handleRestart()
   }, [getAllFiles, handleRestart])
 
-  const handleSelectFile = useCallback(
-    (path: string): void => {
-      setActiveFile(path)
-      setActiveTab('code')
-    },
-    [setActiveFile]
-  )
+  const handleSave = useCallback(async (): Promise<void> => {
+    if (files.size === 0 || isSaving) return
+
+    setIsSaving(true)
+    try {
+      // Convert Map to Record for storage
+      const filesRecord: Record<string, string> = {}
+      files.forEach((content, path) => {
+        filesRecord[path] = content
+      })
+
+      const result = await saveGeneration({
+        name: projectName || `Project ${new Date().toLocaleTimeString()}`,
+        files: filesRecord,
+        prompt: 'Build Mode project',
+        isPublic: false,
+      })
+
+      if (result.error) {
+        toast.error('Failed to save project')
+      } else {
+        toast.success('Project saved successfully')
+        if (result.data?.id) {
+          setCurrentProjectId(result.data.id)
+        }
+      }
+    } catch {
+      toast.error('An error occurred while saving')
+    } finally {
+      setIsSaving(false)
+    }
+  }, [files, isSaving, projectName, setCurrentProjectId])
 
   const isEmpty = files.size === 0
 
+  // Empty state - show card stack without file tree (no files yet)
   if (isEmpty && !isLoading) {
     return (
-      <div className="flex h-full">
-        <FileTree
-          files={files}
-          activeFilePath={activeFilePath}
-          onSelectFile={handleSelectFile}
-          onRefresh={handleRefresh}
-          className="w-56 flex-shrink-0"
-        />
-        <div className="flex-1">
-          <PreviewEmptyState
-            activeTab={activeTab}
-            device={device}
-            onTabChange={setActiveTab}
-            onDeviceChange={setDevice}
-            onRestart={handleRestart}
-            message="Start chatting to generate your app..."
-          />
-        </div>
-      </div>
+      <PreviewEmptyState
+        activeTab={activeTab}
+        device={device}
+        onTabChange={setActiveTab}
+        onDeviceChange={setDevice}
+        onRestart={handleRestart}
+        message="Start chatting to generate your app..."
+      />
     )
   }
 
+  // Show loading overlay while generating or bundling
+  // But always render Sandpack so it can bundle and call onReady
+  const showLoadingOverlay = isLoading || !isReady
+
   return (
-    <div className="flex h-full bg-zinc-950">
-      {/* File Tree Sidebar */}
-      <FileTree
+    <div className="flex flex-col h-full max-h-full overflow-hidden bg-zinc-950">
+      {/* Header with tabs */}
+      <AppPreviewHeader
+        activeTab={activeTab}
+        device={device}
+        onTabChange={setActiveTab}
+        onDeviceChange={setDevice}
+        onRestart={handleRestart}
+        onSave={handleSave}
+        isSaving={isSaving}
         files={files}
+        projectName={projectName}
         activeFilePath={activeFilePath}
-        onSelectFile={handleSelectFile}
-        onRefresh={handleRefresh}
-        showDelete
-        className="w-56 flex-shrink-0"
       />
 
-      {/* Main Preview Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <AppPreviewHeader
-          activeTab={activeTab}
-          device={device}
-          onTabChange={setActiveTab}
-          onDeviceChange={setDevice}
-          onRestart={handleRestart}
-          files={files}
-          projectName={projectName}
-          activeFilePath={activeFilePath}
-        />
+      {/* Content area */}
+      <div className="flex-1 min-h-0 relative p-4 pt-2 bg-zinc-950">
+        <div className="w-full h-full rounded-xl overflow-hidden relative border border-zinc-800 shadow-2xl bg-zinc-950">
 
-        <div className="flex-1 min-h-0 relative bg-zinc-950 p-4 pt-2">
-          <div className="w-full h-full bg-zinc-950 rounded-xl overflow-hidden relative border border-zinc-800 shadow-2xl">
-            {activeTab === 'preview' && sandpackFiles && (
-              <SandpackWrapper
-                files={sandpackFiles}
-                instanceKey={instanceKey}
-                device={device}
-                onReady={handleReady}
-                onReset={handleRestart}
+          {/* Preview Tab - always render Sandpack, overlay loading state */}
+          {activeTab === 'preview' && (
+            <div className="relative h-full">
+              {/* Always render Sandpack so it can bundle */}
+              {sandpackFiles && (
+                <SandpackWrapper
+                  files={sandpackFiles}
+                  instanceKey={instanceKey}
+                  device={device}
+                  onReady={handleReady}
+                  onReset={handleRestart}
+                />
+              )}
+
+              {/* Loading overlay */}
+              {showLoadingOverlay && (
+                <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm z-10 bg-zinc-950/95">
+                  <PreviewEmptyStateContent
+                    message={isLoading ? "Generating preview..." : "Building preview..."}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Code Tab - file tree + code content (no overlays) */}
+          {activeTab === 'code' && (
+            <div className="flex h-full">
+              {/* File Tree inside Code view */}
+              <FileTree
+                files={files}
+                activeFilePath={activeFilePath}
+                onSelectFile={(path) => setActiveFile(path)}
+                onRefresh={handleRefresh}
+                showDelete
+                className="w-56 shrink-0 border-r border-zinc-800"
               />
-            )}
 
-            {activeTab === 'code' && (
-              <div className="h-full overflow-auto p-4 bg-zinc-900">
+              {/* Code content */}
+              <div className="flex-1 h-full overflow-auto p-4 bg-zinc-900">
                 {activeFileContent ? (
                   <>
                     <div className="flex items-center gap-2 mb-3 pb-2 border-b border-zinc-800">
@@ -164,16 +199,8 @@ export function AppPreviewPanel({
                   </div>
                 )}
               </div>
-            )}
-
-            {!isReady && activeTab === 'preview' && !showSlowWarning && files.size > 0 && (
-              <LoadingOverlay />
-            )}
-            {isLoading && files.size > 0 && <UpdatingOverlay />}
-            {!isReady && showSlowWarning && activeTab === 'preview' && (
-              <SlowWarningOverlay onRestart={handleRestart} />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -190,8 +217,20 @@ export function AppPreviewPanel({
   )
 }
 
+import { LoadingPill } from '@/components/generate/preview/loading-pill'
+
+// Simple empty state content for inside the preview panel
+function PreviewEmptyStateContent({ message }: { message: string }): React.ReactElement {
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <LoadingPill />
+      <CardStack items={previewCards} />
+    </div>
+  )
+}
+
 // ============================================================================
-// APP PREVIEW HEADER
+// APP PREVIEW HEADER - Lovable-style icon tabs
 // ============================================================================
 
 interface AppPreviewHeaderProps {
@@ -200,6 +239,8 @@ interface AppPreviewHeaderProps {
   onTabChange: (tab: Tab) => void
   onDeviceChange: (device: Device) => void
   onRestart: () => void
+  onSave: () => void
+  isSaving: boolean
   files: Map<string, string>
   projectName: string
   activeFilePath: string | null
@@ -207,52 +248,71 @@ interface AppPreviewHeaderProps {
 
 function AppPreviewHeader({
   activeTab,
-  device,
   onTabChange,
-  onDeviceChange,
   onRestart,
+  onSave,
+  isSaving,
   files,
   projectName,
-  activeFilePath,
 }: AppPreviewHeaderProps): React.ReactElement {
   return (
-    <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800">
-      <div className="flex items-center gap-4">
-        {/* Tab buttons */}
-        <div className="flex items-center gap-1 bg-zinc-900 rounded-lg p-0.5">
-          <button
-            type="button"
-            onClick={() => onTabChange('preview')}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-              activeTab === 'preview'
-                ? 'bg-zinc-700 text-white'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Preview
-          </button>
-          <button
-            type="button"
-            onClick={() => onTabChange('code')}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-              activeTab === 'code'
-                ? 'bg-zinc-700 text-white'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Code
-          </button>
-        </div>
+    <div className="shrink-0 flex items-center justify-between h-12 px-4 bg-zinc-950">
+      {/* Left: Tab Buttons - Lovable style pill buttons */}
+      <div className="flex items-center gap-0.5 p-1 rounded-full border border-zinc-800 bg-zinc-900/50">
+        {/* Preview Tab */}
+        <button
+          type="button"
+          onClick={() => onTabChange('preview')}
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all',
+            activeTab === 'preview'
+              ? 'text-white bg-zinc-900'
+              : 'text-zinc-500 hover:text-zinc-300'
+          )}
+        >
+          <Globe className="w-3.5 h-3.5" />
+          <span>Preview</span>
+        </button>
 
-        {/* Active file indicator in code view */}
-        {activeTab === 'code' && activeFilePath && (
-          <span className="text-xs text-zinc-500 truncate max-w-[200px]">
-            {activeFilePath}
-          </span>
-        )}
+        {/* Code/Files Tab */}
+        <button
+          type="button"
+          onClick={() => onTabChange('code')}
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all',
+            activeTab === 'code'
+              ? 'text-white bg-zinc-900'
+              : 'text-zinc-500 hover:text-zinc-300'
+          )}
+        >
+          <Code2 className="w-3.5 h-3.5" />
+          <span>Code</span>
+        </button>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Center: URL bar style indicator (optional, can be expanded later) */}
+      <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/50">
+        <span className="text-xs text-zinc-500 font-mono">/</span>
+      </div>
+
+      {/* Right: Actions */}
+      <div className="flex items-center gap-0.5">
+        {/* Save button */}
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={isSaving || files.size === 0}
+          className={cn(
+            'p-2 rounded-lg transition-colors',
+            isSaving || files.size === 0
+              ? 'text-zinc-600 cursor-not-allowed'
+              : 'hover:bg-zinc-800/60 text-zinc-500 hover:text-zinc-300'
+          )}
+          title={isSaving ? 'Saving...' : 'Save project'}
+        >
+          <Save className={cn('w-4 h-4', isSaving && 'animate-pulse')} />
+        </button>
+
         {/* Download ZIP */}
         <DownloadZip
           files={files}
@@ -260,34 +320,14 @@ function AppPreviewHeader({
           variant="icon"
         />
 
-        {/* Device selector (preview only) */}
-        {activeTab === 'preview' && (
-          <select
-            value={device}
-            onChange={(e) => onDeviceChange(e.target.value as Device)}
-            className="px-2 py-1 text-xs bg-zinc-800 border border-zinc-700 rounded text-zinc-300"
-          >
-            <option value="desktop">Desktop</option>
-            <option value="tablet">Tablet</option>
-            <option value="mobile">Mobile</option>
-          </select>
-        )}
-
         {/* Restart button */}
         <button
           type="button"
           onClick={onRestart}
-          className="p-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+          className="p-2 rounded-lg hover:bg-zinc-800/60 text-zinc-500 hover:text-zinc-300 transition-colors"
           title="Restart preview"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
+          <RefreshCw className="w-4 h-4" />
         </button>
       </div>
     </div>

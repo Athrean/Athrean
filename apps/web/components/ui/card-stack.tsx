@@ -69,7 +69,7 @@ export const CardStack = ({
   };
 
   return (
-    <div className="flex items-center gap-6 md:gap-10">
+    <div className="flex items-center gap-3 md:gap-4">
       {/* Left: Navigation Dots/Bar */}
       <div className="flex flex-col gap-3 items-center">
         {items.map((_, index) => {
@@ -78,13 +78,13 @@ export const CardStack = ({
             <div
               key={index}
               className={cn(
-                "relative rounded-full transition-all duration-300 bg-zinc-800",
-                isActive ? "w-1.5 h-8" : "w-1.5 h-1.5"
+                "relative rounded-full transition-all duration-300 bg-zinc-800/50",
+                isActive ? "w-1 h-8" : "w-1 h-1"
               )}
             >
               {isActive && (
                 <div
-                  className="absolute top-0 left-0 w-full bg-zinc-400 rounded-full"
+                  className="absolute top-0 left-0 w-full bg-zinc-500/80 rounded-full"
                   style={{ height: `${progress}%` }}
                 />
               )}
@@ -94,10 +94,10 @@ export const CardStack = ({
       </div>
 
       {/* Center: Stacked Cards */}
-      <div className="relative h-60 w-60 md:h-60 md:w-96">
+      <div className="relative h-60 w-60 md:h-[280px] md:w-[420px]">
         {items.map((card, index) => {
           const relativeIndex = (index - activeIndex + items.length) % items.length;
-          
+
           // Show 3 cards (0, 1, 2)
           const isVisible = relativeIndex < 3;
 
@@ -105,7 +105,7 @@ export const CardStack = ({
             <motion.div
               key={card.id}
               className={cn(
-                "absolute bg-[#323333] h-60 w-60 md:h-60 md:w-96 rounded-3xl p-6 shadow-xl border border-zinc-700/50 flex flex-col justify-between origin-top-center",
+                "absolute bg-[#18181b] h-60 w-60 md:h-[280px] md:w-[420px] rounded-[24px] p-4 shadow-2xl border border-white/5 flex flex-col justify-between origin-top-center",
                 !isVisible && "opacity-0 pointer-events-none"
               )}
               initial={false}
@@ -115,19 +115,19 @@ export const CardStack = ({
                 zIndex: items.length - relativeIndex,
                 opacity: isVisible ? 1 : 0,
                 // Add brightness diff for depth
-                filter: `brightness(${1 - relativeIndex * 0.1})`, 
+                filter: `brightness(${1 - relativeIndex * 0.1})`,
               }}
               transition={{
                 duration: 0.4,
                 ease: "easeOut",
               }}
             >
-              <div className="font-normal text-zinc-300">
+              <div className="w-full h-32 md:h-40 relative">
                 {card.content}
               </div>
-              <div>
-                <p className="text-zinc-100 font-medium">{card.name}</p>
-                <p className="text-zinc-500 font-normal text-sm">{card.designation}</p>
+              <div className="px-1">
+                <p className="text-zinc-100 font-semibold text-base mb-1">{card.name}</p>
+                <p className="text-zinc-500 font-medium text-xs leading-relaxed line-clamp-2">{card.designation}</p>
               </div>
             </motion.div>
           );
@@ -135,28 +135,28 @@ export const CardStack = ({
       </div>
 
       {/* Right: Controls */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <button
           onClick={handlePrev}
-          className="p-2 rounded-full text-zinc-600 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+          className="p-1.5 rounded-full text-zinc-600 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors"
         >
-          <ChevronUp className="w-4 h-4" />
+          <ChevronUp className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={togglePlay}
-          className="p-2 rounded-full text-zinc-600 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+          className="p-1.5 rounded-full text-zinc-600 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors"
         >
           {isPlaying ? (
-            <Pause className="w-4 h-4" />
+            <Pause className="w-3.5 h-3.5" />
           ) : (
-            <Play className="w-4 h-4" />
+            <Play className="w-3.5 h-3.5" />
           )}
         </button>
         <button
           onClick={handleNext}
-          className="p-2 rounded-full text-zinc-600 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+          className="p-1.5 rounded-full text-zinc-600 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors"
         >
-          <ChevronDown className="w-4 h-4" />
+          <ChevronDown className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

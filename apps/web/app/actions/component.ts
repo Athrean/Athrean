@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { SaveGenerationInput } from '@/types'
 
-// Save a user-generated component (AI generated)
+// Save a user-generated project (Build Mode - multi-file)
 export async function saveGeneration(input: SaveGenerationInput) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -14,12 +14,18 @@ export async function saveGeneration(input: SaveGenerationInput) {
         redirect('/auth/login')
     }
 
+    // Store files as JSON in the code field with a marker
+    const codePayload = JSON.stringify({
+        __athrean_project: true,
+        files: input.files,
+    })
+
     const { data, error } = await supabase
         .from('user_generations')
         .insert({
             user_id: user.id,
             name: input.name,
-            code: input.code,
+            code: codePayload,
             prompt: input.prompt,
             model: input.model ?? null,
             duration_ms: input.durationMs ?? null,
@@ -34,6 +40,7 @@ export async function saveGeneration(input: SaveGenerationInput) {
     }
 
     revalidatePath('/projects')
+    revalidatePath('/')
     return { data }
 }
 

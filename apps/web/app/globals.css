@@ -5,19 +5,19 @@
 
 /* Custom theme configuration for Tailwind v4 */
 @theme {
-  /* Override Zinc Colors to match user palette */
-  --color-zinc-950: #242424; /* Main background */
-  --color-zinc-900: #5c5c5c; /* Sections like chat box */
-  --color-zinc-850: #5c5c5c; /* Fallback */
-  --color-zinc-800: #5c5c5c; /* Borders */
-  --color-zinc-700: #5c5c5c; /* Secondary text/borders */
-  --color-zinc-600: #5c5c5c; /* Hover states */
-  --color-zinc-500: #888888; /* Muted text - intermediary? Or keep default? User didn't specify. I'll make it lighter than 575757. */
-  
-  --color-zinc-400: #a1a1aa; /* Keep defaults for mid-tones if not specified */
+  /* Override Zinc Colors - Dark theme palette */
+  --color-zinc-950: #0a0a0a; /* Main background - darkest */
+  --color-zinc-900: #171717; /* Sections, cards, lighter background */
+  --color-zinc-850: #1a1a1a; /* Fallback */
+  --color-zinc-800: #262626; /* Borders */
+  --color-zinc-700: #3f3f46; /* Secondary borders */
+  --color-zinc-600: #52525b; /* Hover states */
+  --color-zinc-500: #71717a; /* Muted text */
+
+  --color-zinc-400: #a1a1aa; /* Keep defaults for mid-tones */
   --color-zinc-300: #d4d4d8;
   --color-zinc-200: #e4e4e7;
-  --color-zinc-100: #f2f2f2; /* Main text */
+  --color-zinc-100: #f4f4f5; /* Main text */
   --color-zinc-50: #fafafa;
   
   /* Use Funnel Display as the default font */

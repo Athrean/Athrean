@@ -6,10 +6,16 @@ import type {
   ReasoningStep,
   ContextUsage,
   Checkpoint,
+  GenerationMode,
+  SyncStatus,
+  SupabaseConfig,
+  BuildModeStore,
 } from '@/types'
 import { generateReasoningId } from '@/types/reasoning'
 
-export const useGenerateStore = create<GenerateStore>((set, get) => ({
+type CombinedStore = GenerateStore & BuildModeStore
+
+export const useGenerateStore = create<CombinedStore>((set, get) => ({
   // Core state
   pendingPrompt: null,
   baseComponent: null,
@@ -25,6 +31,15 @@ export const useGenerateStore = create<GenerateStore>((set, get) => ({
   currentReasoning: [],
   currentContextUsage: null,
   checkpoints: [],
+
+  // Build Mode state (default to 'app' - Component Mode removed)
+  generationMode: 'app' as GenerationMode,
+  activeFilePath: null,
+  supabaseConfig: null,
+  syncStatus: 'synced' as SyncStatus,
+  appProjectId: null,
+  fileCount: 0,
+  pendingProjectFiles: null as Record<string, string> | null,
 
   // Core actions
   setPendingPrompt: (prompt: string | null): void => {
@@ -85,19 +100,43 @@ export const useGenerateStore = create<GenerateStore>((set, get) => ({
 
   loadProject: (project: { id: string; name: string; code: string; prompt: string }): void => {
     const timestamp = Date.now()
+
+    // Check if code is a multi-file project (JSON with __athrean_project marker)
+    let files: Record<string, string> | null = null
+    try {
+      const parsed = JSON.parse(project.code)
+      if (parsed.__athrean_project && parsed.files) {
+        files = parsed.files
+      }
+    } catch {
+      // Not JSON, treat as single-file legacy project (shouldn't happen anymore)
+    }
+
     set({
       currentProjectId: project.id,
       projectName: project.name,
-      generatedCode: project.code,
+      generatedCode: files ? null : project.code,
+      pendingProjectFiles: files,
       messages: [
         { role: 'user', content: project.prompt, timestamp },
-        { role: 'assistant', content: `\`\`\`tsx\n${project.code}\n\`\`\``, timestamp: timestamp + 1 },
+        { role: 'assistant', content: files
+          ? `Loaded project with ${Object.keys(files).length} files.`
+          : `\`\`\`tsx\n${project.code}\n\`\`\``,
+          timestamp: timestamp + 1
+        },
       ],
       // Clear reasoning/checkpoints for loaded projects
       currentReasoning: [],
       currentContextUsage: null,
       checkpoints: [],
     })
+  },
+
+  // Get and clear pending project files (for loading into FileSystem)
+  consumePendingProjectFiles: (): Record<string, string> | null => {
+    const files = get().pendingProjectFiles
+    set({ pendingProjectFiles: null })
+    return files
   },
 
   // Reasoning actions
@@ -149,5 +188,47 @@ export const useGenerateStore = create<GenerateStore>((set, get) => ({
 
   clearCheckpoints: (): void => {
     set({ checkpoints: [] })
+  },
+
+  // Build Mode actions
+  setGenerationMode: (mode: GenerationMode): void => {
+    set({
+      generationMode: mode,
+      // Reset some state when switching modes
+      activeFilePath: null,
+      generatedCode: null,
+    })
+  },
+
+  setActiveFile: (path: string | null): void => {
+    set({ activeFilePath: path })
+  },
+
+  setSupabaseConfig: (config: SupabaseConfig | null): void => {
+    set({ supabaseConfig: config })
+  },
+
+  setSyncStatus: (status: SyncStatus): void => {
+    set({ syncStatus: status })
+  },
+
+  setAppProjectId: (id: string | null): void => {
+    set({ appProjectId: id })
+  },
+
+  setFileCount: (count: number): void => {
+    set({ fileCount: count })
+  },
+
+  resetBuildMode: (): void => {
+    set({
+      generationMode: 'app',
+      activeFilePath: null,
+      supabaseConfig: null,
+      syncStatus: 'synced',
+      appProjectId: null,
+      fileCount: 0,
+      pendingProjectFiles: null,
+    })
   },
 }))

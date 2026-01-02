@@ -126,9 +126,72 @@ export function EmptyState() {
       </div>
       
       <h3 className="text-zinc-200 font-medium mb-2">What shall we build?</h3>
-      <p className="text-sm text-zinc-500 max-w-xs leading-relaxed">
+      <p className="text-sm text-zinc-500 max-w-xs leading-relaxed mb-6">
         Describe your component or app idea, and I'll generate the code for you instantly.
       </p>
+
+      {/* Prompt Suggestions */}
+      <PromptSuggestions />
     </div>
   );
+}
+
+// ============================================================================
+// PROMPT SUGGESTIONS
+// ============================================================================
+
+const SUGGESTIONS = [
+  {
+    label: "Landing page",
+    prompt: "Create a modern SaaS landing page with a hero section, features grid, pricing table, and footer. Use a dark theme with gradient accents.",
+  },
+  {
+    label: "Dashboard",
+    prompt: "Build an analytics dashboard with a sidebar navigation, stats cards, a line chart, and a recent activity table. Dark mode with clean design.",
+  },
+  {
+    label: "Auth flow",
+    prompt: "Create a complete authentication flow with login, signup, and forgot password pages. Include form validation and social login buttons.",
+  },
+  {
+    label: "E-commerce",
+    prompt: "Build a product listing page with a search bar, filter sidebar, product cards with images, and a shopping cart drawer.",
+  },
+]
+
+function PromptSuggestions(): React.ReactElement {
+  return (
+    <div className="flex flex-wrap gap-2 justify-center max-w-sm">
+      {SUGGESTIONS.map((suggestion) => (
+        <SuggestionChip key={suggestion.label} {...suggestion} />
+      ))}
+    </div>
+  )
+}
+
+function SuggestionChip({
+  label,
+  prompt,
+}: {
+  label: string
+  prompt: string
+}): React.ReactElement {
+  // Dispatch a custom event that the ChatInput can listen to
+  const handleClick = (): void => {
+    window.dispatchEvent(
+      new CustomEvent('athrean:suggestion', { detail: { prompt } })
+    )
+  }
+
+  return (
+    <motion.button
+      type="button"
+      onClick={handleClick}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="px-3 py-1.5 text-xs font-medium text-zinc-400 bg-zinc-800/50 hover:bg-zinc-800 hover:text-zinc-200 rounded-full border border-zinc-700/50 hover:border-zinc-600 transition-colors"
+    >
+      {label}
+    </motion.button>
+  )
 }

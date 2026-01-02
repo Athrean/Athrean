@@ -11,11 +11,15 @@ export default async function MainLayout({
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <div className="text-zinc-100 min-h-screen overflow-x-hidden">
-      <BackgroundGradient />
-      <div className="flex min-h-screen relative p-4 gap-4 w-full min-w-0 overflow-x-hidden">
+    <div className="text-zinc-100 h-screen overflow-hidden bg-black selection:bg-zinc-800 selection:text-zinc-100">
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <BackgroundGradient />
+      </div>
+      <div className="flex h-full relative w-full min-w-0 z-10">
         <Sidebar userEmail={user?.email} />
-        <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
+        <main className="flex-1 h-full min-w-0 overflow-y-auto overflow-x-hidden relative scroll-smooth">
+          {children}
+        </main>
       </div>
     </div>
   )

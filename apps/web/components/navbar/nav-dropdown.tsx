@@ -18,9 +18,9 @@ function FeaturedCard({ item, onClose }: FeaturedCardProps): React.ReactElement 
     <Link
       href={item.href}
       onClick={onClose}
-      className="group flex flex-col rounded-2xl bg-zinc-800/50 border border-zinc-700/50 p-4 hover:bg-zinc-700/50 hover:border-zinc-600 transition-all"
+      className="group flex flex-col rounded-2xl bg-zinc-800/80 border border-zinc-700/50 p-4 hover:bg-zinc-700/80 hover:border-zinc-600 transition-all"
     >
-      <div className="w-14 h-14 rounded-xl bg-zinc-700 flex items-center justify-center mb-4">
+      <div className="w-14 h-14 rounded-xl bg-zinc-700/80 flex items-center justify-center mb-4">
         <Icon className="w-6 h-6 text-white" />
       </div>
       <h4 className="font-semibold text-white text-sm mb-1">{item.title}</h4>
@@ -41,7 +41,7 @@ function SimpleItem({ item, onClose }: SimpleItemProps): React.ReactElement {
     <Link
       href={item.href}
       onClick={onClose}
-      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-700/50 transition-colors"
+      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-zinc-800/80 transition-colors"
     >
       <Icon className="w-5 h-5 text-zinc-400" />
       <div>
@@ -105,7 +105,7 @@ export function NavDropdown({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="w-[520px] p-3 bg-[#323333] rounded-2xl shadow-2xl shadow-black/30 border border-zinc-700/50"
+              className="w-[520px] p-3 bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-black/40 border border-zinc-700/50"
             >
               <div className="grid grid-cols-3 gap-2">
                 {featuredItems.map((item) => (

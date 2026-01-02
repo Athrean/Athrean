@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="apps/web/public/banner.webp" width="800" alt="Athrean" />
+  <img src="apps/web/public/banner.gif" width="800" alt="Athrean" />
 
   <h2>Athrean</h2>
   <p><strong>Early‑stage, building in public.</strong></p>

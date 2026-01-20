@@ -30,14 +30,14 @@ export function ProjectsCard({ recentProjects, myProjects, isAuthenticated }: Pr
   return (
     <section className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-zinc-900 rounded-2xl p-8 md:p-10">
-          <div className="sticky top-0 z-40 bg-zinc-900/95 backdrop-blur-sm pb-6 pt-2 mb-8 -mx-8 px-8 border-b border-zinc-800/50 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="bg-zinc-950 rounded-2xl p-8 md:p-10 shadow-[rgba(0,0,0,0.4)_0px_30px_90px]">
+          <div className="sticky top-0 z-40 bg-zinc-950/95 backdrop-blur-sm pb-6 pt-2 mb-8 -mx-8 px-8 border-b border-[#333333] flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-zinc-600 mb-2">Workspace</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-zinc-500 mb-2">Workspace</p>
               <h2 className="text-3xl md:text-4xl font-bold text-white">Projects</h2>
             </div>
 
-            <div className="flex gap-1 p-1.5 bg-zinc-950/80 rounded-2xl">
+            <div className="flex gap-1 p-1.5 bg-zinc-950 rounded-full">
               {tabs.map((tab) => {
                 const Icon = tab.icon
                 const isActive = activeTab === tab.id
@@ -47,8 +47,8 @@ export function ProjectsCard({ recentProjects, myProjects, isAuthenticated }: Pr
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
-                      isActive ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                      "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200",
+                      isActive ? "bg-zinc-900 text-white" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50"
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -104,13 +104,13 @@ export function ProjectsCard({ recentProjects, myProjects, isAuthenticated }: Pr
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex items-center justify-between mt-8 pt-8">
-            <div className="flex items-center gap-6 text-sm text-zinc-600">
+          <div className="flex items-center justify-between mt-8 pt-8 border-t border-[#333333]">
+            <div className="flex items-center gap-6 text-sm text-zinc-500">
               <span>{recentProjects.length} recent</span>
               <span>{myProjects.length} saved</span>
             </div>
             <Link href="/projects">
-              <Button variant="ghost" className="gap-2 text-zinc-400 hover:text-white rounded-xl">
+              <Button variant="ghost" className="gap-2 text-zinc-500 hover:text-white hover:bg-white/5 rounded-xl">
                 View All
                 <ArrowRight className="w-4 h-4" />
               </Button>

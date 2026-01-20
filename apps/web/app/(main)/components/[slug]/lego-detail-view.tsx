@@ -38,9 +38,9 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
   }
 
   return (
-    <div className="h-[calc(100vh-32px)] w-full overflow-hidden">
+    <div className="h-full w-full overflow-hidden">
       {/* Big Container with Header - fixed height matching sidebar */}
-      <div className="bg-[#323333] rounded-2xl px-6 py-4 h-full w-full flex flex-col overflow-hidden">
+      <div className="bg-zinc-950 px-6 py-4 h-full w-full flex flex-col overflow-hidden">
         {/* Header Section */}
         <div className="mb-3 shrink-0">
           <h1 className="text-2xl font-bold text-white mb-1">{item.title}</h1>
@@ -51,9 +51,9 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
         </div>
 
         {/* Smaller Container with Preview/Code */}
-        <div className="flex-1 flex flex-col rounded-xl border border-zinc-800 bg-[#323333] overflow-hidden min-h-0">
+        <div className="flex-1 flex flex-col rounded-xl border border-[#333333] bg-zinc-950 overflow-hidden min-h-0">
           {/* Card Header */}
-          <div className="flex items-center justify-between px-3 h-12 border-b border-zinc-800 bg-[#323333] shrink-0">
+          <div className="flex items-center justify-between px-3 h-12 border-b border-[#333333] bg-zinc-950 shrink-0">
             {/* Left: Tabs */}
             <div className="flex items-center gap-4 h-full">
               <button
@@ -80,7 +80,7 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
             <div className="flex items-center gap-2">
               {viewMode === 'preview' && (
                 <>
-                  <div className="flex items-center bg-[#323333] rounded-md p-0.5 border border-zinc-800">
+                  <div className="flex items-center bg-zinc-950 rounded-md p-0.5 border border-[#333333]">
                     <button
                       onClick={() => setDeviceFrame('desktop')}
                       className={`p-1 rounded transition-colors ${deviceFrame === 'desktop'
@@ -113,7 +113,7 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
                     </button>
                   </div>
                   {/* Theme Toggle */}
-                  <div className="flex items-center bg-[#323333] rounded-md p-0.5 border border-zinc-800">
+                  <div className="flex items-center bg-zinc-950 rounded-md p-0.5 border border-[#333333]">
                     <button
                       onClick={() => setPreviewTheme('light')}
                       className={`p-1 rounded transition-colors ${previewTheme === 'light'
@@ -135,14 +135,14 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
                       <Moon className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                  <div className="w-px h-3 bg-zinc-800" />
+                  <div className="w-px h-3 bg-[#333333]" />
                 </>
               )}
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleCopyCommand}
-                  className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#323333] border border-zinc-800 text-[10px] font-mono text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors"
+                  className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-950 border border-[#333333] text-[10px] font-mono text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors"
                   title="Copy Install Command"
                 >
                   <span className="truncate max-w-[120px]">{commandCopied ? 'Copied!' : 'npx shadcn add ...'}</span>
@@ -165,7 +165,7 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
           </div>
 
           {/* Content */}
-          <div className="flex-1 relative bg-[#323333] overflow-auto min-h-0">
+          <div className="flex-1 relative bg-zinc-950 overflow-auto min-h-0">
             {viewMode === 'preview' ? (
               <>
                 {deviceFrame === 'desktop' && (
@@ -212,7 +212,7 @@ export function LegoDetailView({ item, code }: LegoDetailViewProps): React.React
           </div>
 
           {/* Footer: Full Command */}
-          <div className="border-t border-zinc-800 bg-[#323333] px-4 py-3 shrink-0">
+          <div className="border-t border-[#333333] bg-zinc-950 px-4 py-3 shrink-0">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
               <code className="font-mono text-xs text-zinc-500">{registryCommand}</code>

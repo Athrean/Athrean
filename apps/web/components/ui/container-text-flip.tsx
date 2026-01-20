@@ -55,7 +55,7 @@ export function ContainerTextFlip({
         ref={measureRef}
         className={cn(
           "absolute opacity-0 pointer-events-none whitespace-nowrap",
-          "inline-block text-[#058b8a]",
+          "inline-block text-[#28cbcb]",
           textClassName
         )}
         aria-hidden="true"
@@ -79,7 +79,7 @@ export function ContainerTextFlip({
               ease: [0.4, 0, 0.2, 1],
             }}
             className={cn(
-              "inline-block text-[#058b8a] whitespace-nowrap font-bold",
+              "inline-block text-[#03b5b5] whitespace-nowrap font-bold",
               textClassName
             )}
           >

@@ -123,8 +123,8 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps):
   }
 
   return (
-    <div className="h-[calc(100vh-32px)] flex flex-col">
-      <div className="bg-[#323333] rounded-2xl flex flex-col h-full overflow-hidden">
+    <div className="h-full flex flex-col">
+      <div className="bg-zinc-950 flex flex-col h-full overflow-hidden">
         {/* Header - Fixed */}
         <div className="px-6 sm:px-8 pt-10 pb-6 shrink-0 space-y-6">
           <div>

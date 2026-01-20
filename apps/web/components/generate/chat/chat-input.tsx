@@ -70,7 +70,7 @@ export function ChatInput({
       <form
         onSubmit={handleSubmit}
         className={cn(
-          "relative rounded-[20px] bg-[#323333] overflow-hidden transition-all duration-200",
+          "relative rounded-[20px] bg-zinc-950 overflow-hidden transition-all duration-200 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]",
           isFocused
             ? "ring-1 ring-zinc-600"
             : "ring-1 ring-zinc-700/50"

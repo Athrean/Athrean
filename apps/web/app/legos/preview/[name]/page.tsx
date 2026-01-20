@@ -10,7 +10,7 @@ export default function LegoPreviewPage() {
   const searchParams = useSearchParams();
   const name = params.name as string;
   const theme = searchParams.get('theme') || 'light';
-  const LegoComponent = legosComponents[name];
+  const LegoComponent = legosComponents[name] as React.ComponentType | undefined;
 
   useEffect(() => {
     // Get the root html element
@@ -54,7 +54,7 @@ export default function LegoPreviewPage() {
       className={`relative flex min-h-screen w-full items-center justify-center`}
       style={containerStyles}
     >
-      <LegoComponent />
+      {LegoComponent && <LegoComponent />}
     </div>
   );
 }

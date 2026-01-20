@@ -6,20 +6,29 @@
 /* Custom theme configuration for Tailwind v4 */
 @theme {
   /* Override Zinc Colors - Dark theme palette */
-  --color-zinc-950: #0a0a0a; /* Main background - darkest */
-  --color-zinc-900: #171717; /* Sections, cards, lighter background */
-  --color-zinc-850: #1a1a1a; /* Fallback */
-  --color-zinc-800: #262626; /* Borders */
-  --color-zinc-700: #3f3f46; /* Secondary borders */
-  --color-zinc-600: #52525b; /* Hover states */
-  --color-zinc-500: #71717a; /* Muted text */
+  --color-zinc-950: #0a0a0a;
+  /* Main background - darkest */
+  --color-zinc-900: #171717;
+  /* Sections, cards, lighter background */
+  --color-zinc-850: #1a1a1a;
+  /* Fallback */
+  --color-zinc-800: #262626;
+  /* Borders */
+  --color-zinc-700: #3f3f46;
+  /* Secondary borders */
+  --color-zinc-600: #52525b;
+  /* Hover states */
+  --color-zinc-500: #71717a;
+  /* Muted text */
 
-  --color-zinc-400: #a1a1aa; /* Keep defaults for mid-tones */
+  --color-zinc-400: #a1a1aa;
+  /* Keep defaults for mid-tones */
   --color-zinc-300: #d4d4d8;
   --color-zinc-200: #e4e4e7;
-  --color-zinc-100: #f4f4f5; /* Main text */
+  --color-zinc-100: #f4f4f5;
+  /* Main text */
   --color-zinc-50: #fafafa;
-  
+
   /* Use Funnel Display as the default font */
   --font-sans: 'Funnel Display', sans-serif;
   --font-display: 'Funnel Display', sans-serif;
@@ -33,30 +42,30 @@
   * {
     @apply border-zinc-800;
   }
-  
+
   body {
-    @apply bg-zinc-950 text-zinc-100 antialiased;
+    @apply bg-white text-zinc-950 antialiased;
     font-family: 'Funnel Display', sans-serif;
   }
-  
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     @apply bg-zinc-900;
   }
-  
+
   ::-webkit-scrollbar-thumb {
-    @apply bg-zinc-500 rounded-full; 
+    @apply bg-zinc-500 rounded-full;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-zinc-400;
   }
-  
+
   /* Selection */
   ::selection {
     @apply bg-zinc-700 text-white;
@@ -65,10 +74,12 @@
 
 @layer utilities {
   .scrollbar-none {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
-  
+
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
@@ -76,7 +87,7 @@
   .bg-gradient-radial {
     background-image: radial-gradient(ellipse at center, var(--tw-gradient-stops));
   }
-  
+
   .bg-gradient-conic {
     background-image: conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops));
   }
@@ -113,6 +124,7 @@
       transform: translateX(-50%) scale(1);
       opacity: 1;
     }
+
     100% {
       transform: translateX(-50%) scale(1.05);
       opacity: 0.9;
@@ -176,6 +188,7 @@
       transform: scale(1);
       opacity: 1;
     }
+
     100% {
       transform: scale(1.05);
       opacity: 0.9;
@@ -187,6 +200,7 @@
       transform: scale(1) rotate(0deg);
       opacity: 0.8;
     }
+
     100% {
       transform: scale(1.02) rotate(1deg);
       opacity: 1;
@@ -254,6 +268,7 @@
       transform: translateX(-50%) scale(1);
       opacity: 1;
     }
+
     100% {
       transform: translateX(-50%) scale(1.06);
       opacity: 0.88;

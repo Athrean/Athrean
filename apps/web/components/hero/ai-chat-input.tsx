@@ -54,10 +54,8 @@ export function AiChatInput({
       <form onSubmit={handleSubmit}>
         <div
           className={cn(
-            "relative rounded-[20px] bg-zinc-900 overflow-hidden transition-all duration-200",
-            isFocused
-              ? "ring-1 ring-zinc-600"
-              : "ring-1 ring-zinc-700/50"
+            "relative rounded-[20px] bg-zinc-950 overflow-hidden transition-all duration-200 shadow-[rgba(0,0,0,0.4)_0px_30px_90px]",
+            isFocused && "ring-1 ring-zinc-600/50"
           )}
         >
           {/* Textarea */}
@@ -70,7 +68,7 @@ export function AiChatInput({
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
               rows={1}
-              className="w-full bg-transparent text-zinc-200 text-base placeholder-zinc-500 focus:outline-none resize-none min-h-[28px] max-h-[120px]"
+              className="w-full bg-transparent text-zinc-100 text-base placeholder-zinc-500 focus:outline-none resize-none min-h-[28px] max-h-[120px]"
               style={{
                 height: "auto",
                 overflow: "hidden",
@@ -122,7 +120,7 @@ export function AiChatInput({
                   "flex items-center justify-center w-8 h-8 rounded-full transition-all ml-1",
                   input.trim()
                     ? "bg-zinc-100 text-zinc-900 hover:bg-white"
-                    : "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+                    : "bg-[#333333] text-zinc-500 cursor-not-allowed"
                 )}
               >
                 <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
@@ -153,10 +151,10 @@ function ToolbarButton({
       className={cn(
         "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
         variant === "outlined" && isActive
-          ? "text-teal-400 border border-teal-600 bg-teal-600/20"
+          ? "text-teal-400 border border-teal-800 bg-teal-900/20"
           : variant === "outlined"
-            ? "text-zinc-300 border border-zinc-600 hover:bg-zinc-700/50 hover:text-white"
-            : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-700/50"
+            ? "text-zinc-400 border border-[#333333] hover:bg-white/5 hover:text-white"
+            : "text-zinc-500 hover:text-zinc-200 hover:bg-white/5"
       )}
     >
       {children}

@@ -9,7 +9,7 @@ export interface NavItem {
 }
 
 export const mainNav: NavItem[] = [
-    { name: "Home", href: "/", icon: Home },
+    { name: "Home", href: "/home", icon: Home },
     { name: "Search", href: "/search", icon: Search },
 ]
 

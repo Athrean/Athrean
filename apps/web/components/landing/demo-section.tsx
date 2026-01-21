@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 
 export function DemoSection(): React.ReactElement {
   return (
-    <section id="demo" className="py-24 px-4">
+    <section id="demo" className="py-24 px-4 bg-black">
       <div className="max-w-5xl mx-auto">
         {/* Section header */}
         <motion.div

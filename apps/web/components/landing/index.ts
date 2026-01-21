@@ -1,6 +1,7 @@
 export { LandingNavbar } from "./landing-navbar"
 export { LandingHero } from "./landing-hero"
 export { FeaturesGrid } from "./features-grid"
+export { FeaturesSection } from "./features-section"
 export { ProductShowcase } from "./product-showcase"
 export { DemoSection } from "./demo-section"
 export { FaqSection } from "./faq-section"

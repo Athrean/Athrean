@@ -106,7 +106,7 @@ export function FaqSection(): React.ReactElement {
   }
 
   return (
-    <section id="faq" className="py-24 px-4">
+    <section id="faq" className="py-24 px-4 bg-black">
       <div className="max-w-3xl mx-auto">
         {/* Section header */}
         <motion.div

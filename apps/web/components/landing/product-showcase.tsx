@@ -41,7 +41,7 @@ const products: Product[] = [
 
 export function ProductShowcase(): React.ReactElement {
   return (
-    <section className="py-24 px-4 bg-zinc-950/50">
+    <section className="py-24 px-4 bg-black">
       <div className="max-w-5xl mx-auto">
         {/* Section header */}
         <motion.div

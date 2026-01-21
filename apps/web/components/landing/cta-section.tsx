@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react"
 
 export function CtaSection(): React.ReactElement {
   return (
-    <section className="py-24 px-4">
+    <section className="py-24 px-4 bg-black">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -48,9 +48,9 @@ export function LandingHero(): React.ReactElement {
           transition={{ duration: 0.6 }}
           className="text-center text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl max-w-4xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
         >
-          Ship React Apps{" "}
+          Vibe. Build. Ship.{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-300">
-            in Minutes not Days
+            That Fast.
           </span>
         </motion.h1>
 
@@ -61,7 +61,7 @@ export function LandingHero(): React.ReactElement {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mt-4 text-center text-white/80 text-base md:text-lg drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]"
         >
-          Athrean eats <span className="underline decoration-wavy decoration-teal-400 underline-offset-4">days</span>. Ships in <span className="underline decoration-wavy decoration-teal-400 underline-offset-4">minutes</span>.
+          Prompt it. Preview it. Ship it. <span className="underline decoration-wavy decoration-teal-400 underline-offset-4">No cap.</span>
         </motion.p>
 
         {/* Chat Input */}

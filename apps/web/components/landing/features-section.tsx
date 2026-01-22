@@ -81,13 +81,7 @@ export function FeaturesSection({
       className={cn("relative min-h-[300vh]", className)}
       style={{ background: "#000" }}
     >
-      {/* Barely visible top gradient for transition from hero */}
-      <div
-        className="absolute inset-x-0 top-0 h-32 pointer-events-none"
-        style={{
-          background: "linear-gradient(180deg, rgba(12,12,13,1) 0%, rgba(9,9,11,0) 100%)",
-        }}
-      />
+      {/* Gradient removed for pitch black look */}
 
       {/* Sticky viewport */}
       <div className="sticky top-0 h-screen overflow-hidden">

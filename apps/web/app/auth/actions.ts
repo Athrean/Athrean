@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { verifyTurnstileToken, getClientIp } from "@/lib/turnstile"
-import { rateLimit, AUTH_RATE_LIMIT, getRequestIdentifier } from "@/lib/rate-limit"
+import { rateLimit, AUTH_RATE_LIMIT } from "@/lib/rate-limit"
 
 function getEmailFromFormData(formData: FormData): string | null {
   const email = formData.get("email")
@@ -54,7 +54,7 @@ export async function login(formData: FormData): Promise<never> {
 
   // Rate limiting
   const rateLimitResult = rateLimit(
-    getRequestIdentifier(new Request("http://localhost"), null),
+    clientIp ?? "unknown",
     AUTH_RATE_LIMIT
   )
   if (!rateLimitResult.success) {
@@ -98,7 +98,7 @@ export async function signup(formData: FormData): Promise<never> {
 
   // Rate limiting
   const rateLimitResult = rateLimit(
-    getRequestIdentifier(new Request("http://localhost"), null),
+    clientIp ?? "unknown",
     AUTH_RATE_LIMIT
   )
   if (!rateLimitResult.success) {

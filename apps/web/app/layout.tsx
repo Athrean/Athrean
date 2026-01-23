@@ -2,7 +2,10 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { SmoothScroll } from "@/components/smooth-scroll"
 
-// ... imports
+export const metadata: Metadata = {
+  title: 'Athrean',
+  description: 'AI-powered app builder. Vibe. Build. Ship.',
+}
 
 export default function RootLayout({
   children,

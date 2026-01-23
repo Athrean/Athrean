@@ -42,10 +42,6 @@ const footerSections: FooterSection[] = [
   },
 ]
 
-// Logo width + gap for text column offset
-const LOGO_WIDTH = 128
-const GAP = 32
-const TEXT_OFFSET = LOGO_WIDTH + GAP
 
 export function LandingFooter(): React.ReactElement {
   return (
@@ -62,7 +58,7 @@ export function LandingFooter(): React.ReactElement {
               alt="Athrean"
               width={120}
               height={120}
-              className="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain flex-shrink-0"
+              className="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain shrink-0"
             />
             <span className="text-7xl md:text-8xl lg:text-9xl font-bold text-white tracking-tighter leading-none">
               Athrean

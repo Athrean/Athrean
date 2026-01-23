@@ -316,21 +316,6 @@ export default function Dither({
         return () => clearTimeout(timer);
     }, []);
 
-    const waveUniformsRef = useRef({
-        time: new THREE.Uniform(0),
-        // Initialize with 1,1 to avoid division by zero in shader before first resize
-        resolution: new THREE.Uniform(new THREE.Vector2(1, 1)),
-        waveSpeed: new THREE.Uniform(waveSpeed),
-        waveFrequency: new THREE.Uniform(waveFrequency),
-        waveAmplitude: new THREE.Uniform(waveAmplitude),
-        waveColor: new THREE.Uniform(new THREE.Color(...waveColor)),
-        mousePos: new THREE.Uniform(new THREE.Vector2(0, 0)),
-        enableMouseInteraction: new THREE.Uniform(enableMouseInteraction ? 1 : 0),
-        mouseRadius: new THREE.Uniform(mouseRadius)
-    });
-
-    // ... (rest of the component)
-
     return (
         <Canvas
             className="dither-container"

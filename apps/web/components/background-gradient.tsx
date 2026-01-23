@@ -11,12 +11,12 @@ const Dither = dynamic(() => import("./backgrounds/Dither"), {
 export function BackgroundGradient() {
     const pathname = usePathname();
 
-    if (pathname.startsWith("/generate")) {
+    if (pathname.startsWith("/generate") || pathname.startsWith("/projects") || pathname.startsWith("/home")) {
         return null;
     }
 
     return (
-        <div className="fixed inset-0 w-full h-full -z-10 bg-[#0a0a0a]">
+        <div className="fixed inset-0 w-full h-full -z-10 bg-zinc-950">
             <Dither
                 waveColor={[0.18, 0.62, 0.58]}
                 waveSpeed={0.05}

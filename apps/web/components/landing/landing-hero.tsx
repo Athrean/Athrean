@@ -1,9 +1,9 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import Link from "next/link"
+
 import { motion } from "framer-motion"
-import { Sparkles, Zap, Package, Code2, ArrowRight } from "lucide-react"
+import { Sparkles, Zap, Package, ArrowRight } from "lucide-react"
 import { AiChatInput } from "@/components/hero/ai-chat-input"
 
 const Dither = dynamic(() => import("@/components/backgrounds/Dither"), {
@@ -49,7 +49,7 @@ export function LandingHero(): React.ReactElement {
           className="text-center text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl max-w-4xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
         >
           Vibe. Build. Ship.{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-300">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-teal-300 to-cyan-300">
             That Fast.
           </span>
         </motion.h1>
@@ -98,33 +98,7 @@ export function LandingHero(): React.ReactElement {
         </motion.div>
       </div>
 
-      {/* Bottom Left CTAs */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="relative z-10 px-6 pb-8"
-      >
-        <p className="text-sm text-white/60 mb-1">Powered by AI + React</p>
-        <p className="text-base font-medium text-white mb-4">
-          Build Beautiful React Apps 10x Faster
-        </p>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/generate"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900/80 border border-zinc-700 text-white text-sm font-medium hover:bg-zinc-800 transition-colors backdrop-blur-sm"
-          >
-            <Code2 className="w-4 h-4" />
-            Explore Playground
-          </Link>
-          <Link
-            href="/docs"
-            className="text-sm text-white/60 hover:text-white transition-colors"
-          >
-            Read Our Docs
-          </Link>
-        </div>
-      </motion.div>
+
     </section>
   )
 }

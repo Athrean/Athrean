@@ -19,7 +19,7 @@ export default async function HomeLayout({
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-black text-white">
       <DashboardNavbar
         userEmail={user.email}
         userAvatarUrl={user.user_metadata?.avatar_url}

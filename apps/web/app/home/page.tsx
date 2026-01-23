@@ -29,7 +29,7 @@ function ProjectsSkeleton(): React.ReactElement {
           <Skeleton className="h-6 w-40 mb-6" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
+              <Skeleton key={i} className="aspect-4/3 rounded-xl" />
             ))}
           </div>
         </div>
@@ -41,7 +41,7 @@ function ProjectsSkeleton(): React.ReactElement {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i}>
-                <Skeleton className="aspect-[4/3] rounded-xl mb-3" />
+                <Skeleton className="aspect-4/3 rounded-xl mb-3" />
                 <Skeleton className="h-4 w-24 mb-2" />
                 <Skeleton className="h-3 w-16" />
               </div>

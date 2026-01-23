@@ -8,25 +8,25 @@ import { WireframeHead } from "./wireframe-head"
 export function DemoSection(): React.ReactElement {
   const content = [
     {
-      label: "Instant Generation",
+      label: "Plan-First",
       labelColor: "text-teal-400",
-      title: "DeployBot",
-      subTitle: "One-click launch",
-      description: "DeployBot simplifies deploying and interacting with your Solana programs. With a single click, it compiles, deploys, and generates IDLs and client SDKs, letting you instantly test and interact with your program without leaving the platform or writing extra scripts."
+      title: "Architect",
+      subTitle: "Intelligent planning",
+      description: "Athrean creates a detailed architecture plan before writing any code. It maps out components, decides on state management, and plans your entire app structure—so you get a coherent, production-ready codebase instead of a patchwork of generated snippets."
     },
     {
       label: "Smart Context",
       labelColor: "text-purple-400",
-      title: "EditWizard",
-      subTitle: "Instant tweaks",
-      description: "EditWizard allows you to easily modify existing smart contracts through chat or direct code edits. It intelligently maintains Anchor conventions, syntax, and safety checks, while applying your requested changes so you can improve or refactor programs confidently and quickly."
+      title: "Memory",
+      subTitle: "Persistent project brain",
+      description: "Unlike other tools that forget context mid-generation, Athrean maintains a persistent project memory. It remembers your requirements, past decisions, and learned patterns—delivering consistent code that actually understands your project."
     },
     {
-      label: "Iterative Flow",
+      label: "Component Library",
       labelColor: "text-blue-400",
-      title: "TestRunner",
-      subTitle: "Automated verification",
-      description: "TestRunner generates and runs comprehensive test suites for your smart contracts. It understands your logic and creates edge-case scenarios to ensure your code is robust and secure before you ever deploy to mainnet."
+      title: "Components",
+      subTitle: "Beautiful, ready-to-use",
+      description: "Access a curated library of production-ready components inspired by shadcn. Drag, drop, and customize—or let AI compose them for you. Every component follows best practices and integrates seamlessly with your Next.js stack."
     }
   ];
 

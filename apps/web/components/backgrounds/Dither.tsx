@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable react/no-unknown-property */
-import { useRef, useEffect, forwardRef } from 'react';
+import { useRef, useEffect, forwardRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, wrapEffect } from '@react-three/postprocessing';
 import { Effect } from 'postprocessing';
@@ -308,9 +308,36 @@ export default function Dither({
     enableMouseInteraction = true,
     mouseRadius = 1
 }: DitherProps) {
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        // Small delay to ensure everything is mounted and ready before fading in
+        const timer = setTimeout(() => setReady(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const waveUniformsRef = useRef({
+        time: new THREE.Uniform(0),
+        // Initialize with 1,1 to avoid division by zero in shader before first resize
+        resolution: new THREE.Uniform(new THREE.Vector2(1, 1)),
+        waveSpeed: new THREE.Uniform(waveSpeed),
+        waveFrequency: new THREE.Uniform(waveFrequency),
+        waveAmplitude: new THREE.Uniform(waveAmplitude),
+        waveColor: new THREE.Uniform(new THREE.Color(...waveColor)),
+        mousePos: new THREE.Uniform(new THREE.Vector2(0, 0)),
+        enableMouseInteraction: new THREE.Uniform(enableMouseInteraction ? 1 : 0),
+        mouseRadius: new THREE.Uniform(mouseRadius)
+    });
+
+    // ... (rest of the component)
+
     return (
         <Canvas
             className="dither-container"
+            style={{
+                opacity: ready ? 1 : 0,
+                transition: 'opacity 0.8s ease-in-out'
+            }}
             camera={{ position: [0, 0, 6] }}
             dpr={1}
             gl={{ antialias: true, preserveDrawingBuffer: true }}

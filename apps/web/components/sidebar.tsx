@@ -45,7 +45,7 @@ export function Sidebar({ userEmail, userAvatarUrl }: SidebarProps): React.React
   return (
     <aside
       className={cn(
-        "flex h-full flex-col overflow-hidden border-r border-[#333333] bg-zinc-950 transition-[width] duration-300 shrink-0 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]",
+        "flex h-full flex-col overflow-hidden border-r border-zinc-800 bg-black transition-[width] duration-300 shrink-0 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]",
         collapsed ? "w-[80px]" : "w-[280px]",
       )}
     >
@@ -62,15 +62,15 @@ export function Sidebar({ userEmail, userAvatarUrl }: SidebarProps): React.React
               <img
                 src={userAvatarUrl}
                 alt={firstName}
-                className="h-10 w-10 rounded-full object-cover border-2 border-[#333333] shadow-sm"
+                className="h-10 w-10 rounded-full object-cover border-2 border-zinc-800 shadow-sm"
               />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1F1F1F] text-sm font-semibold text-white shadow-md border border-[#333333]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 text-sm font-semibold text-white shadow-md border border-zinc-800">
                 {workspaceInitial}
               </div>
             )}
             {collapsed && (
-              <span className="pointer-events-none absolute -right-3 -bottom-3 rounded-full bg-zinc-950 p-1 text-zinc-400 shadow-md border border-[#333333]">
+              <span className="pointer-events-none absolute -right-3 -bottom-3 rounded-full bg-zinc-950 p-1 text-zinc-400 shadow-md border border-zinc-800">
                 <PanelLeftOpen className="h-3.5 w-3.5" />
               </span>
             )}

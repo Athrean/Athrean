@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable react/no-unknown-property */
-import { useRef, useEffect, forwardRef } from 'react';
+import { useRef, useEffect, forwardRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, wrapEffect } from '@react-three/postprocessing';
 import { Effect } from 'postprocessing';
@@ -308,9 +308,21 @@ export default function Dither({
     enableMouseInteraction = true,
     mouseRadius = 1
 }: DitherProps) {
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        // Small delay to ensure everything is mounted and ready before fading in
+        const timer = setTimeout(() => setReady(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <Canvas
             className="dither-container"
+            style={{
+                opacity: ready ? 1 : 0,
+                transition: 'opacity 0.8s ease-in-out'
+            }}
             camera={{ position: [0, 0, 6] }}
             dpr={1}
             gl={{ antialias: true, preserveDrawingBuffer: true }}

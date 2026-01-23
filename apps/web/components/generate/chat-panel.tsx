@@ -8,7 +8,7 @@ import type { ChatMessage, ReasoningStep, ContextUsage, Checkpoint, GenerationMo
 import type { FileToolCall } from '@/types/project'
 import { MessageBubble, TypingIndicator } from './chat/chat-message'
 import { ChatInput } from './chat/chat-input'
-import { ChainOfThought } from './chain-of-thought'
+import { ChainOfThought } from './reasoning/chain-of-thought'
 import { CheckpointDivider, AddCheckpointButton } from './reasoning/checkpoint'
 import { EmptyState } from './empty-state'
 import { ProjectDropdown } from './project-dropdown'
@@ -146,7 +146,7 @@ export function ChatPanel({
 
             {/* Chain of Thought - beautiful collapsible display */}
             {currentReasoning.length > 0 && (
-              <ChainOfThought steps={currentReasoning} isComplete={!isGenerating} />
+              <ChainOfThought steps={currentReasoning} isStreaming={isGenerating} />
             )}
 
             {/* Tool Progress - file operations in Build Mode */}

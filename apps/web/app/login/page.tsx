@@ -1,7 +1,6 @@
 "use client"
 
-import Link from "next/link"
-import { Suspense } from "react"
+import { Suspense, useRef, useCallback } from "react"
 import { login } from "../auth/actions"
 import {
   AuthLayout,
@@ -9,34 +8,40 @@ import {
   EmailForm,
   Divider,
   AuthMessage,
+  TurnstileWidget,
 } from "@/components/auth"
+import type { TurnstileWidgetRef } from "@/components/auth/turnstile-widget"
 
 function LoginContent(): React.ReactElement {
+  const turnstileRef = useRef<TurnstileWidgetRef>(null)
+
+  const getTurnstileToken = useCallback(() => {
+    return turnstileRef.current?.getToken() ?? null
+  }, [])
+
   return (
     <>
-      <div className="mb-10 text-center">
-        <h2 className="text-[44px] leading-[1.1] font-medium text-zinc-900 tracking-tight mb-4">
-          Welcome back!
+      <div className="mb-8 text-center">
+        <h2 className="text-[28px] leading-[1.1] font-medium text-white tracking-tight mb-2">
+          Welcome to <span className="tracking-[0.12em]">ATHREAN</span>
         </h2>
-        <p className="text-[15px] text-gray-500 leading-relaxed">
-          Your work, your team, your flow — all in one place.
+        <p className="text-[15px] text-zinc-400 leading-relaxed">
+          Sign in to your account
         </p>
       </div>
 
       <AuthMessage />
-      <OAuthButtons mode="signin" />
+      <OAuthButtons />
       <Divider />
-      <EmailForm action={login} buttonText="Sign in with email" />
+      <EmailForm
+        action={login}
+        buttonText="Sign in with email"
+        getTurnstileToken={getTurnstileToken}
+      />
 
-      <p className="text-center text-[15px] text-gray-500">
-        Don&apos;t have an account?{" "}
-        <Link
-          href="/signup"
-          className="text-black font-bold hover:text-gray-700 transition-colors"
-        >
-          Sign Up
-        </Link>
-      </p>
+      <div className="flex justify-center">
+        <TurnstileWidget ref={turnstileRef} />
+      </div>
     </>
   )
 }

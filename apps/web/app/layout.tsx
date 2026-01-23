@@ -1,20 +1,25 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { SmoothScroll } from "@/components/smooth-scroll"
 
 export const metadata: Metadata = {
-  title: 'Athrean - Beautiful React Components',
-  description: 'Browse curated animated components or let AI design custom ones for you.',
+  title: 'Athrean',
+  description: 'AI-powered app builder. Vibe. Build. Ship.',
 }
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}): React.ReactElement {
+}>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body className="antialiased" suppressHydrationWarning>
-        {children}
+    <html lang="en">
+      <body
+        className={`antialiased font-sans bg-zinc-950 text-white`}
+      >
+        <SmoothScroll>
+          {children}
+        </SmoothScroll>
       </body>
     </html>
   )

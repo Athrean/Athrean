@@ -1,0 +1,6 @@
+export { LandingNavbar } from "./landing-navbar"
+export { LandingHero } from "./landing-hero"
+export { FeaturesSection } from "./features-section"
+export { DemoSection } from "./demo-section"
+export { FaqSection } from "./faq-section"
+export { LandingFooter } from "./landing-footer"

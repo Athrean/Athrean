@@ -18,7 +18,7 @@ export default async function ComponentDetailPage({ params }: PageProps): Promis
   const code = item.files[0]?.content || ''
 
   return (
-    <div className="h-[calc(100vh-32px)]">
+    <div className="h-full bg-black">
       <LegoDetailView item={item} code={code} />
     </div>
   )

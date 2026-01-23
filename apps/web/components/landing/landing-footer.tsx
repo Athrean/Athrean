@@ -55,8 +55,8 @@ export function LandingFooter(): React.ReactElement {
 
         {/* Left Side: Branding */}
         <div className="flex flex-col">
-          {/* Logo and Title - Baseline Aligned */}
-          <div className="flex items-end gap-8">
+          {/* Logo and Title - Bottom Aligned */}
+          <div className="flex items-end gap-4">
             <Image
               src="/vector-logo.png"
               alt="Athrean"
@@ -94,7 +94,7 @@ export function LandingFooter(): React.ReactElement {
         </div>
       </div>
 
-      {/* Bottom Copyright - Centered like Winterfell */}
+      {/* Bottom Copyright - Centered */}
       <div className="mt-20 pt-8 text-center">
         <p className="text-sm text-zinc-600">
           &copy; {new Date().getFullYear()} Athrean. Powered by AI + Creativity.
